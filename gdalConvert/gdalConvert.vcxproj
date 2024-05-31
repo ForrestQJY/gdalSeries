@@ -47,7 +47,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG_;_DEBUG;DEBUG;NOMINMAX=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonJson;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -63,7 +63,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_RELEASE_;NOMINMAX=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonJson;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>

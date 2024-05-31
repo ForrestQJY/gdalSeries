@@ -21,13 +21,13 @@
     <ClCompile Include="gdalToTMS_helper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="gdalToTMS_static.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="gdalToTMS_unity.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="gdalToTMS_unmanaged.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="gdalToTMS_metadata.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,13 +35,13 @@
     <ClInclude Include="gdalToTMS_helper.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="gdalToTMS_static.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="gdalToTMS_unity.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="gdalToTMS_unmanaged.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gdalToTMS_metadata.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

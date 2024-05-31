@@ -20,7 +20,7 @@
 #include <gdal_priv.h>
 
 
-#include <io_basics.h>
+#include <io_class.h>
 #include <io_composition.h>
 #include <io_file.h>
 #include <io_log.h>
@@ -28,12 +28,12 @@
 #include <geo_plugins.h>
 #include <unmanagedClass_tms.h>
 #include <util_coordinate.h>
+#include <util_entity.h>
 
 #include <GlobalGeodetic.hpp>
 #include <GlobalMercator.hpp>
 #include <Grid.hpp>
 
-#include "gdalToTMS_static.h"
 #include "gdalToTMS_unity.h"
 
 using namespace gb;
@@ -45,15 +45,15 @@ public:
 	gdalToTMS_helper();
 	~gdalToTMS_helper() {};
 public:
-	void initialize(U_TMS u_TMS);
+	void initialize(U_TMS u_param);
 	bool convert();
 	void getTifFiles();
 	void buildFiles();
 	void printLog();
 	void getGrid(Grid& grid);
 private:
-	gdalToTMS_unity tmsUnity;
+	std::vector<entity_tms> vec_entityTMS;
 private:
-	std::vector<tmsInfo> vec_tmsInfo;
+	U_TMS u_Param;
 };
 #endif 
