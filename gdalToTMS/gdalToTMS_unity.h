@@ -24,7 +24,7 @@
 
 #include <io_class.h>
 #include <io_constant.h>
-#include <io_log.h>
+#include <io_utily.h>
 #include <io_file.h>
 #include <json_helper.h>
 #include <util_algorithm.h>
@@ -36,7 +36,7 @@
 using namespace gb;
 
 
-class gdalToTMS_unity :public io_basics
+class gdalToTMS_unity :public io_class
 {
 public:
 	gdalToTMS_unity() {};

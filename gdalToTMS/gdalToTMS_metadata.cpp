@@ -12,8 +12,8 @@ void gdalToTMS_metadata::add(const GDALTiler& tiler, const TileCoordinate* coord
 	CRSBounds _validBounds = tiler.bounds();
 	i_zoom zoom = coordinate->zoom;
 
-	startZoom = (u_Param.f_TMSConfig.StartZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.StartZoom;
-	endZoom = (u_Param.f_TMSConfig.EndZoom < 0) ? 0 : u_Param.f_TMSConfig.EndZoom;
+	maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.MaxZoom;
+	minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
 
 	if ((1 + zoom) > vec_levelInfo.size()) {
 		vec_levelInfo.resize(1 + zoom, levelInfo());
@@ -47,14 +47,14 @@ void gdalToTMS_metadata::add(const gdalToTMS_metadata& otherMetadata)
 		const CRSBounds& _tileBounds = otherMetadata.bounds;
 		const CRSBounds& _validBounds = otherMetadata.validBounds;
 
-		if (otherMetadata.vec_levelInfo.size() > vec_levelInfo.size())		{
+		if (otherMetadata.vec_levelInfo.size() > vec_levelInfo.size()) {
 			vec_levelInfo.resize(otherMetadata.vec_levelInfo.size(), levelInfo());
 		}
 		for (size_t i = 0; i < otherMetadata.vec_levelInfo.size(); i++) {
 			vec_levelInfo[i].add(otherMetadata.vec_levelInfo[i]);
 		}
-		startZoom = (u_Param.f_TMSConfig.StartZoom < 0) ? otherMetadata.vec_levelInfo.size() - 1 : u_Param.f_TMSConfig.StartZoom;
-		endZoom = (u_Param.f_TMSConfig.EndZoom < 0) ? 0 : u_Param.f_TMSConfig.EndZoom;
+		maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? otherMetadata.vec_levelInfo.size() - 1 : u_Param.f_TMSConfig.MaxZoom;
+		minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
 
 		if (bounds.getMaxX() == bounds.getMinX()) {
 			bounds = _tileBounds;
@@ -99,7 +99,7 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	else if (strcmp(u_Param.f_TMSConfig.Profile, "custom") == 0) {
 		std::string strWKT = u_Param.f_TMSConfig.CustomWKT;
 		strWKT = io_file::toLower(strWKT);
-		if (strWKT.find("epsg") != std::string::npos) {
+		if (io_utily::find(strWKT, "epsg")) {
 			strEpsgCode = strWKT;
 			iEpsgCode = std::stoi(io_file::replace(strWKT, "epsg:", ""));
 		}
@@ -167,8 +167,8 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	valueMeta["latLonBounds"]["south"] = validMinY;
 	valueMeta["latLonBounds"]["east"] = validMaxX;
 	valueMeta["latLonBounds"]["north"] = validMaxY;
-	valueMeta["maxzoom"] = startZoom;
-	valueMeta["minzoom"] = endZoom;
+	valueMeta["maxzoom"] = maxZoom;
+	valueMeta["minzoom"] = minZoom;
 	if (strcmp(u_Param.f_TMSConfig.Profile, "geodetic") == 0) {
 		valueMeta["proj"] = 4326;
 	}
@@ -179,10 +179,10 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	valueMeta["type"] = u_Param.f_TMSConfig.TMSFormat;
 	valueMeta["ziped"] = ziped;
 
-	std::string layer_Path = ti.o.outputFolderPath + DirSeparator + "layer.json";
+	std::string layer_Path = ti.o.outputFolderPath + symbol_dir + "layer" + symbol_ext + format_json;
 	json_helper::writeJson(layer_Path, valueLayer);
 
-	std::string meta_Path = ti.o.outputFolderPath + DirSeparator + "meta.json";
+	std::string meta_Path = ti.o.outputFolderPath + symbol_dir + "meta" + symbol_ext + format_json;
 	json_helper::writeJson(meta_Path, valueMeta);
 }
 
@@ -209,24 +209,24 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 	transform->Transform(1, &validMinX, &validMinY, &validZ);
 	transform->Transform(1, &validMaxX, &validMaxY, &validZ);
 
-	std::string strMinX = std::to_string(validMinX);
-	std::string strMinY = std::to_string(validMinY);
-	std::string strMaxX = std::to_string(validMaxX);
-	std::string strMaxY = std::to_string(validMaxY);
+	std::string strMinX = io_utily::toString(validMinX);
+	std::string strMinY = io_utily::toString(validMinY);
+	std::string strMaxX = io_utily::toString(validMaxX);
+	std::string strMaxY = io_utily::toString(validMaxY);
 	std::string strEpsgCode;
 	int iEpsgCode = 0;
-	if (strcmp(u_Param.f_TMSConfig.Profile, "geodetic") == 0) {
+	if (io_utily::find(u_Param.f_TMSConfig.Profile, "geodetic")) {
 		strEpsgCode = "EPSG:4326";
 		iEpsgCode = 4326;
 	}
-	else if (strcmp(u_Param.f_TMSConfig.Profile, "mercator") == 0) {
+	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "mercator")) {
 		strEpsgCode = "EPSG:3857";
 		iEpsgCode = 3857;
 	}
-	else if (strcmp(u_Param.f_TMSConfig.Profile, "custom") == 0) {
+	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "custom")) {
 		std::string strWKT = u_Param.f_TMSConfig.CustomWKT;
 		strWKT = io_file::toLower(strWKT);
-		if (strWKT.find("epsg") != std::string::npos) {
+		if (io_utily::find(strWKT, "epsg")) {
 			strEpsgCode = strWKT;
 			iEpsgCode = std::stoi(io_file::replace(strWKT, "epsg:", ""));
 		}
@@ -235,8 +235,8 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 		}
 	}
 	std::string strCTBFormat = u_Param.f_TMSConfig.TMSFormat;
-	std::string strTileSize = std::to_string(u_Param.f_TMSConfig.TileSize);
-	std::string strMimeType = strCTBFormat == "jpg" ? "image/jpeg" : strCTBFormat == "png" ? "image/png" : "image/tiff";
+	std::string strTileSize = io_utily::toString(u_Param.f_TMSConfig.TileSize);
+	std::string strMimeType = strCTBFormat == format_jpg ? "image/jpeg" : strCTBFormat == format_png ? "image/png" : "image/tiff";
 	std::string strProfile = u_Param.f_TMSConfig.Profile;
 
 
@@ -263,15 +263,15 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 
 	for (int i = 0; i < vec_levelInfo.size(); i++)
 	{
-		std::string strIndex = std::to_string(i);
+		std::string strIndex = io_utily::toString(i);
 		std::string strPixel = "";
 		if (iEpsgCode == 4326) {
 			double pixel = 0.703125 / std::pow(2, i);
-			strPixel = std::to_string(pixel);
+			strPixel = io_utily::toString(pixel);
 		}
 		else if (iEpsgCode == 3857) {
 			double pixel = 78271.516 / std::pow(2, i);
-			strPixel = std::to_string(pixel);
+			strPixel = io_utily::toString(pixel);
 		}
 		xml.append("<TileSet href=\"" + strIndex + "\" units-per-pixel=\"" + strPixel + "\" order=\"" + strIndex + "\"/>");
 		xml.append("\n");
@@ -281,7 +281,7 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 	xml.append("</TileMap>");
 
 
-	std::string xml_Path = ti.o.outputFolderPath + DirSeparator + "tilemapresource.xml";
+	std::string xml_Path = ti.o.outputFolderPath + symbol_dir + "tilemapresource" + symbol_ext + format_xml;
 	std::ofstream outfile(xml_Path);
 	if (outfile) {
 		outfile << xml << std::endl;

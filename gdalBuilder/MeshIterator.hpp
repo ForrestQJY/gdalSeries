@@ -48,8 +48,8 @@ public:
     MeshIterator(tiler, tiler.maxZoomLevel(), 0)
   {}
 
-  MeshIterator(const MeshTiler &tiler, i_zoom startZoom, i_zoom endZoom = 0) :
-    GridIterator(tiler.grid(), tiler.bounds(), startZoom, endZoom),
+  MeshIterator(const MeshTiler &tiler, i_zoom maxZoom, i_zoom minZoom = 0) :
+    GridIterator(tiler.grid(), tiler.bounds(), maxZoom, minZoom),
     tiler(tiler)
   {}
 

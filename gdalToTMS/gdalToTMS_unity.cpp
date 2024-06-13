@@ -14,14 +14,14 @@ void gdalToTMS_unity::setTif(entity_tms& et, Grid& grid)
 	buildServer(et, &grid, metadata);
 	buildJson(et, grid, metadata);
 	if (metadata) {
-		if (strcmp(u_Param.f_TMSConfig.TMSFormat, "terrain") == 0 ||
-			strcmp(u_Param.f_TMSConfig.TMSFormat, "mesh") == 0) {
+		if (io_utily::equals(u_Param.f_TMSConfig.TMSFormat, "terrain") ||
+			io_utily::equals(u_Param.f_TMSConfig.TMSFormat, "mesh")) {
 			metadata->writeJsonFile(et);
 		}
 		else if (
-			strcmp(u_Param.f_TMSConfig.TMSFormat, "jpg") == 0 ||
-			strcmp(u_Param.f_TMSConfig.TMSFormat, "png") == 0 ||
-			strcmp(u_Param.f_TMSConfig.TMSFormat, "tiff") == 0) {
+			io_utily::equals(u_Param.f_TMSConfig.TMSFormat, "jpg") ||
+			io_utily::equals(u_Param.f_TMSConfig.TMSFormat, "png") ||
+			io_utily::equals(u_Param.f_TMSConfig.TMSFormat, "tiff")) {
 			metadata->writeXmlFile(et);
 		}
 		delete metadata;
@@ -32,7 +32,7 @@ void gdalToTMS_unity::buildServer(entity_tms et, Grid* grid, gdalToTMS_metadata*
 {
 	GDALDataset* poDataset = (GDALDataset*)GDALOpen(et.i.inputFilePath_UTF8.c_str(), GA_ReadOnly);
 	if (poDataset == NULL) {
-		m_callback.sendError("无法用GDAL识别数据:" + io_log::appendBracket(et.i.inputFilePath));
+		m_callback.sendError("无法用GDAL识别数据:" + io_utily::appendBracket(et.i.inputFilePath));
 		throw GBException("Error: could not open GDAL dataset");
 	}
 	gdalToTMS_metadata* threadMetadata = NULL;
@@ -41,7 +41,7 @@ void gdalToTMS_unity::buildServer(entity_tms et, Grid* grid, gdalToTMS_metadata*
 		threadMetadata->set(u_Param, m_callback);
 	}
 
-	GBFileTileSerializer serializer(et.o.outputFolderPath + DirSeparator, u_Param.f_Basic.OverlayFile);
+	GBFileTileSerializer serializer(et.o.outputFolderPath + symbol_dir, u_Param.f_Basic.OverlayFile);
 
 	try {
 		serializer.startSerialization();
@@ -50,11 +50,11 @@ void gdalToTMS_unity::buildServer(entity_tms et, Grid* grid, gdalToTMS_metadata*
 			const RasterTiler tiler(poDataset, *grid);
 			buildMetadata(et, tiler, threadMetadata);
 		}
-		else if (strcmp(u_Param.f_TMSConfig.TMSFormat, "terrain") == 0) {
+		else if (io_utily::equals(u_Param.f_TMSConfig.TMSFormat, "terrain")) {
 			const TerrainTiler tiler(poDataset, *grid);
 			buildTerrain(et, serializer, tiler, threadMetadata);
 		}
-		else if (strcmp(u_Param.f_TMSConfig.TMSFormat, "mesh") == 0) {
+		else if (io_utily::equals(u_Param.f_TMSConfig.TMSFormat, "mesh")) {
 			const MeshTiler tiler(poDataset, *grid, et.specifiedHeight, 1.0);
 			buildMesh(et, serializer, tiler, threadMetadata);
 		}
@@ -95,10 +95,10 @@ void gdalToTMS_unity::buildGDAL(entity_tms et, GDALSerializer& serializer, const
 	}
 
 	const char* extension = poDriver->GetMetadataItem(GDAL_DMD_EXTENSION);
-	i_zoom startZoom = (u_Param.f_TMSConfig.StartZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.StartZoom;
-	i_zoom endZoom = (u_Param.f_TMSConfig.EndZoom < 0) ? 0 : u_Param.f_TMSConfig.EndZoom;
+	i_zoom maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.MaxZoom;
+	i_zoom minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
 
-	RasterIterator iter(tiler, startZoom, endZoom);
+	RasterIterator iter(tiler, maxZoom, minZoom);
 	int completedCount = et.incrementIterator(iter, 0);
 	et.setTaskCount(iter);
 	CPLStringList creationOptions;
@@ -119,10 +119,10 @@ void gdalToTMS_unity::buildGDAL(entity_tms et, GDALSerializer& serializer, const
 
 void gdalToTMS_unity::buildMesh(entity_tms et, MeshSerializer& serializer, const MeshTiler& tiler, gdalToTMS_metadata* metadata)
 {
-	i_zoom startZoom = (u_Param.f_TMSConfig.StartZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.StartZoom;
-	i_zoom endZoom = (u_Param.f_TMSConfig.EndZoom < 0) ? 0 : u_Param.f_TMSConfig.EndZoom;
+	i_zoom maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.MaxZoom;
+	i_zoom minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
 
-	MeshIterator iter(tiler, startZoom, endZoom);
+	MeshIterator iter(tiler, maxZoom, minZoom);
 	int completedCount = et.incrementIterator(iter, 0);
 	et.setTaskCount(iter);
 	GDALDatasetReaderWithOverviews reader(tiler);
@@ -145,10 +145,10 @@ void gdalToTMS_unity::buildMesh(entity_tms et, MeshSerializer& serializer, const
 
 void gdalToTMS_unity::buildMetadata(entity_tms et, const RasterTiler& tiler, gdalToTMS_metadata* metadata)
 {
-	i_zoom startZoom = (u_Param.f_TMSConfig.StartZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.StartZoom;
-	i_zoom endZoom = (u_Param.f_TMSConfig.EndZoom < 0) ? 0 : u_Param.f_TMSConfig.EndZoom;
+	i_zoom maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.MaxZoom;
+	i_zoom minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
 
-	RasterIterator iter(tiler, startZoom, endZoom);
+	RasterIterator iter(tiler, maxZoom, minZoom);
 	int completedCount = et.incrementIterator(iter, 0);
 	et.setTaskCount(iter);
 
@@ -163,11 +163,11 @@ void gdalToTMS_unity::buildMetadata(entity_tms et, const RasterTiler& tiler, gda
 void gdalToTMS_unity::buildTerrain(entity_tms et, TerrainSerializer& serializer, const TerrainTiler& tiler, gdalToTMS_metadata* metadata)
 {
 
-	i_zoom startZoom = (u_Param.f_TMSConfig.StartZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.StartZoom;
-	i_zoom endZoom = (u_Param.f_TMSConfig.EndZoom < 0) ? 0 : u_Param.f_TMSConfig.EndZoom;
+	i_zoom maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.MaxZoom;
+	i_zoom minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
 
 
-	TerrainIterator iter(tiler, startZoom, endZoom);
+	TerrainIterator iter(tiler, maxZoom, minZoom);
 	int completedCount = et.incrementIterator(iter, 0);
 	et.setTaskCount(iter);
 	GDALDatasetReaderWithOverviews reader(tiler);
@@ -189,14 +189,14 @@ void gdalToTMS_unity::buildTerrain(entity_tms et, TerrainSerializer& serializer,
 
 void gdalToTMS_unity::buildJson(entity_tms et, Grid grid, gdalToTMS_metadata* metadata)
 {
-	if (u_Param.f_TMSConfig.CesiumFriendly == 1 && (strcmp(u_Param.f_TMSConfig.Profile, "geodetic") == 0) && u_Param.f_TMSConfig.EndZoom <= 0) {
+	if (u_Param.f_TMSConfig.CesiumFriendly == 1 && io_utily::equals(u_Param.f_TMSConfig.Profile, "geodetic") && u_Param.f_TMSConfig.MinZoom <= 0) {
 
 		// Create missing root tiles if it is necessary
 		if (u_Param.f_TMSConfig.Metadata == 1) {
-			std::string dirName0 = et.o.outputFolderPath + DirSeparator + "0" + DirSeparator + "0";
-			std::string dirName1 = et.o.outputFolderPath + DirSeparator + "0" + DirSeparator + "1";
-			std::string tileName0 = dirName0 + DirSeparator + "0.terrain";
-			std::string tileName1 = dirName1 + DirSeparator + "0.terrain";
+			std::string dirName0 = et.o.outputFolderPath + symbol_dir + "0" + symbol_dir + "0";
+			std::string dirName1 = et.o.outputFolderPath + symbol_dir + "0" + symbol_dir + "1";
+			std::string tileName0 = dirName0 + symbol_dir + "0" + symbol_ext + format_terrain;
+			std::string tileName1 = dirName1 + symbol_dir + "0" + symbol_ext + format_terrain;
 
 			i_zoom missingZoom = 65535;
 			gb::TileCoordinate missingTileCoord(missingZoom, 0, 0);
@@ -215,8 +215,8 @@ void gdalToTMS_unity::buildJson(entity_tms et, Grid grid, gdalToTMS_metadata* me
 				}
 			if (missingTileCoord.zoom != missingZoom) {
 				globalIteratorIndex = 0; // reset global iterator index
-				u_Param.f_TMSConfig.StartZoom = 0;
-				u_Param.f_TMSConfig.EndZoom = 0;
+				u_Param.f_TMSConfig.MaxZoom = 0;
+				u_Param.f_TMSConfig.MinZoom = 0;
 				missingTileName = createEmptyRootElevationFile(missingTileName, grid, missingTileCoord);
 				buildServer(et, &grid, NULL);
 				VSIUnlink(missingTileName.c_str());
@@ -313,8 +313,7 @@ std::string gdalToTMS_unity::createEmptyRootElevationFile(std::string& fileName,
 void gdalToTMS_unity::reportProgress(entity_tms et, int completedCount)
 {
 	mtx.lock();
-	std::string strComplete = calculateComplete();
-	std::string strMessage = "线程:" + io_log::appendBracket(et.threadIndex) + "已完成:" + strComplete;
+	std::string strMessage = "线程:" + io_utily::appendBracket(et.threadIndex) + "已完成:" + io_utily::appendBracket(io_utily::toString(completedCount) + "/" + io_utily::toString(et.taskCount));
 	m_callback.sendMessage(strMessage);
 	m_callback.sendProgress(completedCount, taskCount);
 	mtx.unlock();

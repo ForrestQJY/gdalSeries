@@ -18,8 +18,8 @@ int main(int argc, const char* argv[]) {
 	u_TMS.f_TMSConfig.WriteVertexNormals = 0;
 	u_TMS.f_TMSConfig.SpecifiedHeight = 0;
 	u_TMS.f_TMSConfig.HeightValue = 0;
-	u_TMS.f_TMSConfig.StartZoom = -1;
-	u_TMS.f_TMSConfig.EndZoom = -1;
+	u_TMS.f_TMSConfig.MaxZoom = -1;
+	u_TMS.f_TMSConfig.MinZoom = -1;
 	tifToTMS(&u_TMS);
 
 	return true;

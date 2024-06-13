@@ -31,7 +31,7 @@
 #include "GBFileOutputStream.hpp"
 #include "GBZOutputStream.hpp"
 #include <io_file.h>
-#include <io_log.h>
+#include <io_utily.h>
 
 using namespace std;
 using namespace gb;

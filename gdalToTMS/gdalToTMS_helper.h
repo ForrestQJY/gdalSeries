@@ -23,7 +23,7 @@
 #include <io_class.h>
 #include <io_composition.h>
 #include <io_file.h>
-#include <io_log.h>
+#include <io_utily.h>
 #include <io_thread.h>
 #include <geo_plugins.h>
 #include <unmanagedClass_tms.h>
@@ -39,7 +39,7 @@
 using namespace gb;
 
 
-class gdalToTMS_helper :public io_basics
+class gdalToTMS_helper :public io_class
 {
 public:
 	gdalToTMS_helper();
@@ -49,7 +49,6 @@ public:
 	bool convert();
 	void getTifFiles();
 	void buildFiles();
-	void printLog();
 	void getGrid(Grid& grid);
 private:
 	std::vector<entity_tms> vec_entityTMS;

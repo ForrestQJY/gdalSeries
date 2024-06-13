@@ -16,7 +16,7 @@ void __stdcall getLngLatAlt_ByXML(const char* input, double& lng, double& lat, d
 void __stdcall getLngLatAlt_ByEPSG(int epsg, double x, double y, double z, double& lng, double& lat, double& alt)
 {
 	geo_plugins::gdalRegister();
-	util_spatial spatial("EPSG:" + std::to_string(epsg));
+	util_spatial spatial("EPSG:" + io_utily::toString(epsg));
 	Eigen::Vector3d source(x, y, z);
 	Eigen::Vector3d target;
 	spatial.toLngLatAlt(source, target);
@@ -42,7 +42,7 @@ void __stdcall getLngLatAlt_ByPROJ(const char* proj, double x, double y, double 
 void __stdcall getLngLatAltArray_ByEPSG(int epsg, int size, double* x, double* y, double* z)
 {
 	geo_plugins::gdalRegister();
-	util_spatial spatial("EPSG:" + std::to_string(epsg));
+	util_spatial spatial("EPSG:" + io_utily::toString(epsg));
 	spatial.toLngLatAlt(size, x, y, z);
 	spatial.uninstall();
 }
@@ -55,10 +55,10 @@ void __stdcall getLngLatAltArray_ByPROJ(const char* proj, int size, double* x, d
 	spatial.uninstall();
 }
 
-void __stdcall coordinateSystemConvert(const char* sourceCoordinate, const char* targetCoordinate, double sX, double sY, double sZ, double& tX, double& tY, double& tZ)
+void __stdcall coordSystemConvert(const char* sourceCoord, const char* targetCoord, double sX, double sY, double sZ, double& tX, double& tY, double& tZ)
 {
 	geo_plugins::gdalRegister();
-	util_spatial spatial(sourceCoordinate, targetCoordinate);
+	util_spatial spatial(sourceCoord, targetCoord);
 	Eigen::Vector3d source(sX, sY, sZ);
 	Eigen::Vector3d target;
 	spatial.toLngLatAlt(source, target);
@@ -68,10 +68,10 @@ void __stdcall coordinateSystemConvert(const char* sourceCoordinate, const char*
 	spatial.uninstall();
 }
 
-void __stdcall coordinateSystemConvert_Array(const char* sourceCoordinate, const char* targetCoordinate, int size, double* x, double* y, double* z)
+void __stdcall coordSystemConvert_Array(const char* sourceCoord, const char* targetCoord, int size, double* x, double* y, double* z)
 {
 	geo_plugins::gdalRegister();
-	util_spatial spatial(sourceCoordinate, targetCoordinate);
+	util_spatial spatial(sourceCoord, targetCoord);
 	spatial.toLngLatAlt(size, x, y, z);
 	spatial.uninstall();
 }
@@ -98,7 +98,7 @@ void __stdcall coordinateSystemConvert_Array(const char* sourceCoordinate, const
 //	}
 //	const OGRSpatialReference* sOGRSpatialReference = poDataset->GetSpatialRef();
 //	int epsgCode = sOGRSpatialReference->GetEPSGGeogCS();
-//	util_spatial spatial(std::to_string(epsgCode), targetCoordinate);
+//	util_spatial spatial(io_utily::toString(epsgCode), targetCoordinate);
 //
 //	OGRLayer* poLayer = poDataset->GetLayer(0); // 获取第一个图层  
 //	if (poLayer == NULL) {

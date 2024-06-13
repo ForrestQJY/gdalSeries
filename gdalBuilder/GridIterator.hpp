@@ -56,29 +56,29 @@ class gb::GridIterator :
 public:
 
 	/// Instantiate an iterator with a grid
-	GridIterator(const Grid& grid, i_zoom startZoom, i_zoom endZoom = 0) :
+	GridIterator(const Grid& grid, i_zoom maxZoom, i_zoom minZoom = 0) :
 		grid(grid),
-		startZoom(startZoom),
-		endZoom(endZoom),
+		maxZoom(maxZoom),
+		minZoom(minZoom),
 		gridExtent(grid.getExtent()),
-		bounds(grid.getTileExtent(startZoom)),
-		currentTile(TileCoordinate(startZoom, bounds.getLowerLeft())) // the initial tile coordinate
+		bounds(grid.getTileExtent(maxZoom)),
+		currentTile(TileCoordinate(maxZoom, bounds.getLowerLeft())) // the initial tile coordinate
 	{
-		if (startZoom < endZoom)
+		if (maxZoom < minZoom)
 			throw GBException("Iterating from a starting zoom level that is less than the end zoom level");
 	}
 
 	/// Instantiate an iterator with a grid and separate bounds
-	GridIterator(const Grid& grid, const CRSBounds& extent, i_zoom startZoom, i_zoom endZoom = 0) :
+	GridIterator(const Grid& grid, const CRSBounds& extent, i_zoom maxZoom, i_zoom minZoom = 0) :
 		grid(grid),
-		startZoom(startZoom),
-		endZoom(endZoom),
+		maxZoom(maxZoom),
+		minZoom(minZoom),
 		gridExtent(extent)
 	{
-		if (startZoom < endZoom)
+		if (maxZoom < minZoom)
 			throw GBException("Iterating from a starting zoom level that is less than the end zoom level");
 
-		currentTile.zoom = startZoom;
+		currentTile.zoom = maxZoom;
 		setTileBounds();
 	}
 
@@ -114,7 +114,7 @@ public:
 
 		if (++(currentTile.y) > bounds.getMaxY()) {
 			if (++(currentTile.x) > bounds.getMaxX()) {
-				if (currentTile.zoom > endZoom) {
+				if (currentTile.zoom > minZoom) {
 					(currentTile.zoom)--;
 
 					setTileBounds();
@@ -140,8 +140,8 @@ public:
 	bool
 		operator==(const GridIterator& other) const {
 		return currentTile == other.currentTile
-			&& startZoom == other.startZoom
-			&& endZoom == other.endZoom
+			&& maxZoom == other.maxZoom
+			&& minZoom == other.minZoom
 			&& bounds == other.bounds
 			&& gridExtent == other.gridExtent
 			&& grid == other.grid;
@@ -162,7 +162,7 @@ public:
 	/// Return `true` if the iterator is at the end
 	bool
 		exhausted() const {
-		return currentTile.zoom == endZoom && currentTile.x > bounds.getMaxX() && currentTile.y > bounds.getMaxY();
+		return currentTile.zoom == minZoom && currentTile.x > bounds.getMaxX() && currentTile.y > bounds.getMaxY();
 	}
 
 	/// Reset the iterator to a certain point
@@ -171,8 +171,8 @@ public:
 		if (start < end)
 			throw GBException("Starting zoom level cannot be less than the end zoom level");
 
-		currentTile.zoom = startZoom = start;
-		endZoom = end;
+		currentTile.zoom = maxZoom = start;
+		minZoom = end;
 
 		setTileBounds();
 	}
@@ -181,7 +181,7 @@ public:
 	i_tile
 		getSize() const {
 		i_tile size = 0;
-		for (i_zoom zoom = endZoom; zoom <= startZoom; ++zoom) {
+		for (i_zoom zoom = minZoom; zoom <= maxZoom; ++zoom) {
 			TileCoordinate ll = grid.crsToTile(gridExtent.getLowerLeft(), zoom),
 				ur = grid.crsToTile(gridExtent.getUpperRight(), zoom);
 
@@ -214,8 +214,8 @@ protected:
 	}
 
 	const Grid& grid;      ///< The grid we are iterating over
-	i_zoom startZoom;      ///< The starting zoom level
-	i_zoom endZoom;        ///< The final zoom level
+	i_zoom maxZoom;        ///< The max zoom level
+	i_zoom minZoom;        ///< The min zoom level
 	CRSBounds gridExtent;  ///< The extent of the underlying grid to iterate over
 	TileBounds bounds;     ///< The extent of the currently iterated zoom level
 	TileCoordinate currentTile; ///< The identity of the current tile being pointed to

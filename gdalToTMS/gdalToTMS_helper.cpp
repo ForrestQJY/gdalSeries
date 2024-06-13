@@ -2,7 +2,7 @@
 
 gdalToTMS_helper::gdalToTMS_helper()
 {
-	io_time::timeStart();
+	carryStart();
 	geo_plugins::gdalRegister();
 }
 
@@ -20,24 +20,22 @@ void gdalToTMS_helper::initialize(U_TMS u_param)
 	u_Param.f_Delegation = u_param.f_Delegation;
 
 
-	m_callback.init("osgbToLod", u_Param.f_Basic.UId);
-	m_callback.set("Delegate_Message", u_Param.f_Delegation.Delegate_Message);
-	m_callback.set("Delegate_Progress", u_Param.f_Delegation.Delegate_Progress);
-	m_callback.set("Delegate_Value", u_Param.f_Delegation.Delegate_Value);
+	init("gdalToTMS", u_Param);
 }
 
 
 bool gdalToTMS_helper::convert()
 {
 	getTifFiles();
+	printBasic(u_Param.f_Basic);
 	buildFiles();
-	printLog();
+	carryEnd(u_Param.f_Basic.Output);
 	return true;
 }
 
 void gdalToTMS_helper::getTifFiles()
 {
-	io_composition::getList<entity_tms, std::string>(vec_entityTMS, u_Param.f_Basic.Input, u_Param.f_Basic.Output, tif_NoDot, "");
+	io_composition::getList<entity_tms, std::string>(vec_entityTMS, u_Param.f_Basic.Input, u_Param.f_Basic.Output, format_tif, "");
 
 
 	for (entity_tms& et : vec_entityTMS) {
@@ -75,8 +73,8 @@ void gdalToTMS_helper::buildFiles()
 
 				mtx.lock();
 				completedCount++;
-				std::string strComplete = calculateComplete();
-				std::string strMessage = io_log::appendBracket(et.i.inputFileName_WithoutExtension, bracketEnum::parenthesis) + " 已完成 " + strComplete;
+				std::string strComplete = progress();
+				std::string strMessage = io_utily::appendBracket(et.i.inputFileName_WithoutExtension, bracketEnum::parenthesis) + " 已完成 " + strComplete;
 				m_callback.sendMessage(strMessage);
 				m_callback.sendProgress(completedCount, taskCount);
 				mtx.unlock();
@@ -87,15 +85,9 @@ void gdalToTMS_helper::buildFiles()
 	async(func);
 }
 
-void gdalToTMS_helper::printLog()
-{
-	std::string message = "运行时间:" + io_log::appendBracket(io_time::secondToTime(io_time::timeEnd()));
-	m_callback.sendMessage(message);
-}
-
 void gdalToTMS_helper::getGrid(Grid& grid)
 {
-	if (strcmp(u_Param.f_TMSConfig.Profile, "geodetic") == 0) {
+	if (io_utily::find(u_Param.f_TMSConfig.Profile, "geodetic")) {
 		OGRSpatialReference srs;
 		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 		OGRErr OGRErr_f = srs.importFromEPSG(4326);
@@ -103,7 +95,7 @@ void gdalToTMS_helper::getGrid(Grid& grid)
 		u_Param.f_TMSConfig.TileSize = tileSize;
 		grid = GlobalGeodetic(srs, tileSize);
 	}
-	else if (strcmp(u_Param.f_TMSConfig.Profile, "mercator") == 0) {
+	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "mercator")) {
 		OGRSpatialReference srs;
 		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 		OGRErr OGRErr_f = srs.importFromEPSG(3857);
@@ -111,12 +103,12 @@ void gdalToTMS_helper::getGrid(Grid& grid)
 		u_Param.f_TMSConfig.TileSize = tileSize;
 		grid = GlobalMercator(srs, tileSize);
 	}
-	else if (strcmp(u_Param.f_TMSConfig.Profile, "custom") == 0) {
+	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "custom")) {
 		OGRSpatialReference srs;
 		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 		OGRErr result;
 		std::string strCoordinate = io_file::toLower(u_Param.f_TMSConfig.CustomWKT);
-		if (strCoordinate.find("epsg") == 0) {
+		if (io_utily::find(strCoordinate, "epsg")) {
 			int epsgCode = 0;
 			util_coordinate::splitEPSG(epsgCode, strCoordinate);
 			result = srs.importFromEPSG(epsgCode);

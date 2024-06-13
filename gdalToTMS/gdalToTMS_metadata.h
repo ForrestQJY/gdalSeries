@@ -8,6 +8,7 @@
 #include <types.hpp>
 
 #include <io_class.h>
+#include <io_utily.h>
 #include <json_helper.h>
 #include <util_algorithm.h>
 #include <util_entity.h>
@@ -39,7 +40,7 @@ public:
 	int finalX; 
 	int finalY;
 };
-class gdalToTMS_metadata :public io_basics
+class gdalToTMS_metadata :public io_class
 {
 public:
 	gdalToTMS_metadata() {	}
@@ -52,8 +53,8 @@ public:
 	std::vector<levelInfo> vec_levelInfo;
 	CRSBounds bounds;
 	CRSBounds validBounds;
-	i_zoom startZoom;
-	i_zoom endZoom;
+	i_zoom maxZoom;
+	i_zoom minZoom;
 private:
 	U_TMS u_Param;
 };
