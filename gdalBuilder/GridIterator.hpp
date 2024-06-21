@@ -50,8 +50,7 @@ namespace gb {
  * grid, but alternative extents can be passed in to the constructor, acting as
  * a spatial filter.
  */
-class gb::GridIterator :
-	public std::iterator<std::input_iterator_tag, TileCoordinate*>
+class gb::GridIterator
 {
 public:
 

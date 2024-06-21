@@ -8,6 +8,7 @@
 #include <types.hpp>
 
 #include <io_class.h>
+#include <io_file.h>
 #include <io_utily.h>
 #include <json_helper.h>
 #include <util_algorithm.h>

@@ -3,7 +3,7 @@
 gdalToTMS_helper::gdalToTMS_helper()
 {
 	carryStart();
-	geo_plugins::gdalRegister();
+	m_gdal.gdalRegister();
 }
 
 void gdalToTMS_helper::initialize(U_TMS u_param)
@@ -51,7 +51,6 @@ void gdalToTMS_helper::getTifFiles()
 
 void gdalToTMS_helper::buildFiles()
 {
-	std::mutex mtx;
 	std::function<bool(int)> func = [&](int taskIndex) {
 		if (map_taskInterval.count(taskIndex) > 0) {
 			std::vector<int> vec_taskInterval = map_taskInterval[taskIndex];
@@ -71,13 +70,7 @@ void gdalToTMS_helper::buildFiles()
 				unity.set(u_Param, m_callback);
 				unity.setTif(et, grid);
 
-				mtx.lock();
-				completedCount++;
-				std::string strComplete = progress();
-				std::string strMessage = io_utily::appendBracket(et.i.inputFileName_WithoutExtension, bracketEnum::parenthesis) + " ÒÑÍê³É " + strComplete;
-				m_callback.sendMessage(strMessage);
-				m_callback.sendProgress(completedCount, taskCount);
-				mtx.unlock();
+				progress(et.o.outputFileName_WithinExtension);
 			}
 		}
 		return true;

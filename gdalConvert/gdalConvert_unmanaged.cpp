@@ -1,13 +1,12 @@
 #include "gdalConvert_unmanaged.h"
 
-
 void __stdcall getLngLatAlt_ByXML(const char* input, double& lng, double& lat, double& alt)
 {
-	geo_plugins::gdalRegister();
+	geo_gdal gdal;
+	gdal.gdalRegister();
 	util_spatial spatial(input);
-	Eigen::Vector3d source(lng, lat, alt);
 	Eigen::Vector3d target;
-	spatial.toLngLatAlt(source, target);
+	spatial.toLngLatAlt(spatial.sCS.cEPSG.xyz, target);
 	lng = target.x();
 	lat = target.y();
 	alt = target.z();
@@ -15,7 +14,8 @@ void __stdcall getLngLatAlt_ByXML(const char* input, double& lng, double& lat, d
 }
 void __stdcall getLngLatAlt_ByEPSG(int epsg, double x, double y, double z, double& lng, double& lat, double& alt)
 {
-	geo_plugins::gdalRegister();
+	geo_gdal gdal;
+	gdal.gdalRegister();
 	util_spatial spatial("EPSG:" + io_utily::toString(epsg));
 	Eigen::Vector3d source(x, y, z);
 	Eigen::Vector3d target;
@@ -28,7 +28,8 @@ void __stdcall getLngLatAlt_ByEPSG(int epsg, double x, double y, double z, doubl
 
 void __stdcall getLngLatAlt_ByPROJ(const char* proj, double x, double y, double z, double& lng, double& lat, double& alt)
 {
-	geo_plugins::gdalRegister();
+	geo_gdal gdal;
+	gdal.gdalRegister();
 	util_spatial spatial(proj);
 	Eigen::Vector3d source(x, y, z);
 	Eigen::Vector3d target;
@@ -41,7 +42,8 @@ void __stdcall getLngLatAlt_ByPROJ(const char* proj, double x, double y, double 
 
 void __stdcall getLngLatAltArray_ByEPSG(int epsg, int size, double* x, double* y, double* z)
 {
-	geo_plugins::gdalRegister();
+	geo_gdal gdal;
+	gdal.gdalRegister();
 	util_spatial spatial("EPSG:" + io_utily::toString(epsg));
 	spatial.toLngLatAlt(size, x, y, z);
 	spatial.uninstall();
@@ -49,7 +51,8 @@ void __stdcall getLngLatAltArray_ByEPSG(int epsg, int size, double* x, double* y
 
 void __stdcall getLngLatAltArray_ByPROJ(const char* proj, int size, double* x, double* y, double* z)
 {
-	geo_plugins::gdalRegister();
+	geo_gdal gdal;
+	gdal.gdalRegister();
 	util_spatial spatial(proj);
 	spatial.toLngLatAlt(size, x, y, z);
 	spatial.uninstall();
@@ -57,11 +60,19 @@ void __stdcall getLngLatAltArray_ByPROJ(const char* proj, int size, double* x, d
 
 void __stdcall coordSystemConvert(const char* sourceCoord, const char* targetCoord, double sX, double sY, double sZ, double& tX, double& tY, double& tZ)
 {
-	geo_plugins::gdalRegister();
+	geo_gdal gdal;
+	gdal.gdalRegister();
 	util_spatial spatial(sourceCoord, targetCoord);
-	Eigen::Vector3d source(sX, sY, sZ);
+
+	Eigen::Vector3d source;
 	Eigen::Vector3d target;
-	spatial.toLngLatAlt(source, target);
+	if (sX == 0 || sY == 0 || sZ == 0) {
+		target = spatial.sCS.cLngLatAlt.xyz;
+	}
+	else {
+		source = Eigen::Vector3d(sX, sY, sZ);
+		spatial.toLngLatAlt(source, target);
+	}
 	tX = target.x();
 	tY = target.y();
 	tZ = target.z();
@@ -70,7 +81,8 @@ void __stdcall coordSystemConvert(const char* sourceCoord, const char* targetCoo
 
 void __stdcall coordSystemConvert_Array(const char* sourceCoord, const char* targetCoord, int size, double* x, double* y, double* z)
 {
-	geo_plugins::gdalRegister();
+	geo_gdal gdal;
+	gdal.gdalRegister();
 	util_spatial spatial(sourceCoord, targetCoord);
 	spatial.toLngLatAlt(size, x, y, z);
 	spatial.uninstall();

@@ -25,7 +25,7 @@
 #include <io_file.h>
 #include <io_utily.h>
 #include <io_thread.h>
-#include <geo_plugins.h>
+#include <geo_gdal.h>
 #include <unmanagedClass_tms.h>
 #include <util_coordinate.h>
 #include <util_entity.h>
@@ -52,6 +52,8 @@ public:
 	void getGrid(Grid& grid);
 private:
 	std::vector<entity_tms> vec_entityTMS;
+private:
+	geo_gdal m_gdal;
 private:
 	U_TMS u_Param;
 };

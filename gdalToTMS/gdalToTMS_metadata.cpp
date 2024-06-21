@@ -116,7 +116,7 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 		valueLayer["extensions"].append("octvertexnormals");
 	}
 	else {
-		valueLayer["extensions"].append(util_algorithm::getJsonEmptyArray());
+		valueLayer["extensions"].append(json_helper::getJsonEmptyArray());
 	}
 	valueLayer["extensions"].clear();
 	if (strcmp(u_Param.f_TMSConfig.TMSFormat, "terrain") == 0) {

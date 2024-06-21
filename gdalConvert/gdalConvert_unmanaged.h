@@ -4,7 +4,7 @@
 
 
 #include <io_constant.h>
-#include <geo_plugins.h>
+#include <geo_gdal.h>
 #include <util_spatial.h>
 
 #include <gdal_priv.h>  
