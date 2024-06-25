@@ -79,10 +79,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gdalConvert_unmanaged.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gdalConvert_unmanaged.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="gdalConvert.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
