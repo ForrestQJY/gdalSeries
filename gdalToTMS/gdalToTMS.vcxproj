@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -49,12 +49,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CPL_DISABLE_DLL;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;NOMINMAX=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonJson;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D:\gitCode\gdalSeries\x64\Debug\gdalBuilder.lib;D:\gitCode\package\common\build\lib\Debug\commonUtil.lib;D:\gitCode\package\jsoncpp\lib\Debug\jsoncpp.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\gdald.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\zlibd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\gitCode\gdalSeries\x64\Debug\gdalBuilder.lib;D:\gitCode\package\jsoncpp\lib\Debug\jsoncpp.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\gdald.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\tinyxml2.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\zlibd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -66,14 +66,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CPL_DISABLE_DLL;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;NOMINMAX=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonJson;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D:\gitCode\gdalSeries\x64\Release\gdalBuilder.lib;D:\gitCode\package\common\build\lib\Release\commonUtil.lib;D:\gitCode\package\jsoncpp\lib\Release\jsoncpp.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\gdal.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\gitCode\gdalSeries\x64\Release\gdalBuilder.lib;D:\gitCode\package\jsoncpp\lib\Release\jsoncpp.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\gdal.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\tinyxml2.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>

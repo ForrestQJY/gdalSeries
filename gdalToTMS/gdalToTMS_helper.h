@@ -23,10 +23,10 @@
 #include <io_class.h>
 #include <io_composition.h>
 #include <io_file.h>
-#include <io_utily.h>
 #include <io_thread.h>
+#include <io_transfer.h>
+#include <io_utily.h>
 #include <geo_gdal.h>
-#include <unmanagedClass_tms.h>
 #include <util_coordinate.h>
 #include <util_entity.h>
 
@@ -55,6 +55,6 @@ private:
 private:
 	geo_gdal m_gdal;
 private:
-	U_TMS u_Param;
+	param_TMS m_param;
 };
 #endif 

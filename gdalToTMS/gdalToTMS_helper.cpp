@@ -1,5 +1,4 @@
 #include "gdalToTMS_helper.h"
-
 gdalToTMS_helper::gdalToTMS_helper()
 {
 	carryStart();
@@ -8,44 +7,31 @@ gdalToTMS_helper::gdalToTMS_helper()
 
 void gdalToTMS_helper::initialize(U_TMS u_param)
 {
-	u_Param.f_Basic.Input = u_param.f_Basic.Input;
-	u_Param.f_Basic.OverlayFile = u_param.f_Basic.OverlayFile == 1 ? 1 : 0;
-	u_Param.f_Basic.Output = u_param.f_Basic.Output;
-	u_Param.f_Basic.OutputFormat = u_param.f_Basic.OutputFormat;
-	u_Param.f_Basic.RunnableThread = u_param.f_Basic.RunnableThread < 1 ? 1 : u_param.f_Basic.RunnableThread;
-	u_Param.f_Basic.UId = u_param.f_Basic.UId == NULL ? DEFAULT_UID : u_param.f_Basic.UId;
-
-	u_Param.f_TMSConfig = u_param.f_TMSConfig;
-
-	u_Param.f_Delegation = u_param.f_Delegation;
-
-
-	init("gdalToTMS", u_Param);
+	m_param = io_transfer::transfer<U_TMS, param_TMS>(u_param);
+	init("gdalToTMS", m_param);
 }
 
 
 bool gdalToTMS_helper::convert()
 {
 	getTifFiles();
-	printBasic(u_Param.f_Basic);
 	buildFiles();
-	carryEnd(u_Param.f_Basic.Output);
+	carryEnd(m_param.pBasic.output);
 	return true;
 }
 
 void gdalToTMS_helper::getTifFiles()
 {
-	io_composition::getList<entity_tms, std::string>(vec_entityTMS, u_Param.f_Basic.Input, u_Param.f_Basic.Output, format_tif, "");
+	io_composition::getList<entity_tms, std::string>(vec_entityTMS, m_param.pBasic.input, m_param.pBasic.output, format_tif, "");
 
 
 	for (entity_tms& et : vec_entityTMS) {
-		et.gzip = u_Param.f_TMSConfig.Gzip == 1;
-		et.writeVertexNormals = u_Param.f_TMSConfig.WriteVertexNormals == 1;
-		et.specifiedHeight = u_Param.f_TMSConfig.SpecifiedHeight == 1;
-		et.heightValue = u_Param.f_TMSConfig.HeightValue;
+		et.gzip = m_param.pTMS.gzip == 1;
+		et.writeVertexNormals = m_param.pTMS.writeVertexNormals == 1;
 	}
 	taskCount = vec_entityTMS.size();
-	runnableThread = taskCount >= u_Param.f_Basic.RunnableThread ? u_Param.f_Basic.RunnableThread : taskCount;
+	m_param.pBasic.runnableThread = runnableThread = std::min(m_param.pBasic.runnableThread, taskCount);
+	m_param.printTMS(m_callback);
 }
 
 
@@ -58,7 +44,7 @@ void gdalToTMS_helper::buildFiles()
 				int index = vec_taskInterval[i];
 				std::string result = "";
 				entity_tms& et = vec_entityTMS[index];
-				if (u_Param.f_Basic.OverlayFile) {
+				if (m_param.pBasic.overlayFile) {
 					io_file::deleteFolder(et.o.outputFolderPath);
 				}
 				io_file::mkdirs(et.o.outputFolderPath);
@@ -67,10 +53,10 @@ void gdalToTMS_helper::buildFiles()
 				getGrid(grid);
 
 				gdalToTMS_unity unity;
-				unity.set(u_Param, m_callback);
+				unity.set(m_param, m_callback);
 				unity.setTif(et, grid);
 
-				progress(et.o.outputFileName_WithinExtension);
+				progress(taskIndex, et.o.outputFileName_WithinExtension);
 			}
 		}
 		return true;
@@ -80,38 +66,50 @@ void gdalToTMS_helper::buildFiles()
 
 void gdalToTMS_helper::getGrid(Grid& grid)
 {
-	if (io_utily::find(u_Param.f_TMSConfig.Profile, "geodetic")) {
+	if (io_utily::find(m_param.pTMS.profile, "geodetic")) {
 		OGRSpatialReference srs;
 		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-		OGRErr OGRErr_f = srs.importFromEPSG(4326);
-		int tileSize = (u_Param.f_TMSConfig.TileSize < 1) ? 65 : u_Param.f_TMSConfig.TileSize;
-		u_Param.f_TMSConfig.TileSize = tileSize;
-		grid = GlobalGeodetic(srs, tileSize);
-	}
-	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "mercator")) {
-		OGRSpatialReference srs;
-		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-		OGRErr OGRErr_f = srs.importFromEPSG(3857);
-		int tileSize = (u_Param.f_TMSConfig.TileSize < 1) ? 256 : u_Param.f_TMSConfig.TileSize;
-		u_Param.f_TMSConfig.TileSize = tileSize;
-		grid = GlobalMercator(srs, tileSize);
-	}
-	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "custom")) {
-		OGRSpatialReference srs;
-		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-		OGRErr result;
-		std::string strCoordinate = io_file::toLower(u_Param.f_TMSConfig.CustomWKT);
-		if (io_utily::find(strCoordinate, "epsg")) {
-			int epsgCode = 0;
-			util_coordinate::splitEPSG(epsgCode, strCoordinate);
-			result = srs.importFromEPSG(epsgCode);
+		if (!m_param.pTMS.customSpatial.empty()) {
+			OGRErr result;
+			std::string strCoordinate = io_file::toLower(m_param.pTMS.customSpatial);
+			if (io_utily::find(strCoordinate, "epsg")) {
+				int epsgCode = 0;
+				util_coordinate::splitEPSG(epsgCode, strCoordinate);
+				result = srs.importFromEPSG(epsgCode);
+			}
+			else {
+				result = srs.importFromWkt(strCoordinate.c_str());
+			}
+			if (result != OGRERR_NONE) return;
 		}
 		else {
-			result = srs.importFromWkt(strCoordinate.c_str());
+			OGRErr OGRErr_f = srs.importFromEPSG(4326);
 		}
-		if (result != OGRERR_NONE) return;
-		int tileSize = (u_Param.f_TMSConfig.TileSize < 1) ? 256 : u_Param.f_TMSConfig.TileSize;
-		u_Param.f_TMSConfig.TileSize = tileSize;
+		int tileSize = (m_param.pTMS.tileSize < 1) ? 65 : m_param.pTMS.tileSize;
+		m_param.pTMS.tileSize = tileSize;
+		grid = GlobalGeodetic(srs, tileSize);
+	}
+	else if (io_utily::find(m_param.pTMS.profile, "mercator")) {
+		OGRSpatialReference srs;
+		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+		if (!m_param.pTMS.customSpatial.empty()) {
+			OGRErr result;
+			std::string strCoordinate = io_file::toLower(m_param.pTMS.customSpatial);
+			if (io_utily::find(strCoordinate, "epsg")) {
+				int epsgCode = 0;
+				util_coordinate::splitEPSG(epsgCode, strCoordinate);
+				result = srs.importFromEPSG(epsgCode);
+			}
+			else {
+				result = srs.importFromWkt(strCoordinate.c_str());
+			}
+			if (result != OGRERR_NONE) return;
+		}
+		else {
+			OGRErr OGRErr_f = srs.importFromEPSG(3857);
+		}
+		int tileSize = (m_param.pTMS.tileSize < 1) ? 256 : m_param.pTMS.tileSize;
+		m_param.pTMS.tileSize = tileSize;
 		grid = GlobalMercator(srs, tileSize);
 	}
 }

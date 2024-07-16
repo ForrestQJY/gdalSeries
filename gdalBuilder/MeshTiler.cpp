@@ -42,24 +42,12 @@ private:
 	std::map<int, int> mIndicesMap;
 	Coordinate<int> mTriangles[3];
 	bool mTriOddOrder;
-	bool mSpecifiedHeight;
-	double mHeightValue;
 	int mTriIndex;
 
 public:
 	WrapperMesh(CRSBounds& bounds, Mesh& mesh, i_tile tileSizeX, i_tile tileSizeY) :
 		mMesh(mesh),
 		mBounds(bounds),
-		mTriOddOrder(false),
-		mTriIndex(0) {
-		mCellSizeX = (bounds.getMaxX() - bounds.getMinX()) / (double)(tileSizeX - 1);
-		mCellSizeY = (bounds.getMaxY() - bounds.getMinY()) / (double)(tileSizeY - 1);
-	}
-	WrapperMesh(CRSBounds& bounds, Mesh& mesh, i_tile tileSizeX, i_tile tileSizeY, bool specifiedHeight, double heightValue) :
-		mMesh(mesh),
-		mBounds(bounds),
-		mSpecifiedHeight(specifiedHeight),
-		mHeightValue(heightValue),
 		mTriOddOrder(false),
 		mTriIndex(0) {
 		mCellSizeX = (bounds.getMaxX() - bounds.getMinX()) / (double)(tileSizeX - 1);
@@ -110,7 +98,7 @@ public:
 
 			double xmin = mBounds.getMinX();
 			double ymax = mBounds.getMaxY();
-			double height = mSpecifiedHeight ? mHeightValue : heightfield.height(x, y);
+			double height = heightfield.height(x, y);
 
 			mMesh.vertices.push_back(CRSVertex(xmin + (x * mCellSizeX), ymax - (y * mCellSizeY), height));
 			mIndicesMap.insert(std::make_pair(index, iv));
@@ -176,7 +164,7 @@ gb::MeshTiler::prepareSettingsOfTile(MeshTile* terrainTile, GDALDataset* dataset
 	}
 	gb::CRSBounds mGridBounds = mGrid.tileBounds(coord);
 	Mesh& tileMesh = terrainTile->getMesh();
-	WrapperMesh mesh(mGridBounds, tileMesh, tileSizeX, tileSizeY, mSpecifiedHeight, mHeightValue);
+	WrapperMesh mesh(mGridBounds, tileMesh, tileSizeX, tileSizeY);
 	heightfield.generateMesh(mesh, 0);
 	heightfield.clear();
 

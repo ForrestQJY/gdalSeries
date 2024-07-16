@@ -56,13 +56,6 @@ public:
 		TerrainTiler(poDataset, grid, TilerOptions()),
 		mMeshQualityFactor(meshQualityFactor) {}
 
-	MeshTiler(GDALDataset* poDataset, const Grid& grid, bool specifiedHeight = false, double heightValule = 0) :
-		TerrainTiler(poDataset, grid, TilerOptions()),
-		mSpecifiedHeight(specifiedHeight),
-		mHeightValue(heightValule),
-		mMeshQualityFactor(1.0) {}
-
-
 
 	/// Overload the assignment operator
 	MeshTiler&
@@ -77,9 +70,6 @@ public:
 		createMesh(GDALDataset* dataset, const TileCoordinate& coord, GDALDatasetReader* reader) const;
 
 protected:
-
-	bool mSpecifiedHeight;
-	double mHeightValue;
 	// Specifies the factor of the quality to convert terrain heightmaps to meshes.
 	double mMeshQualityFactor;
 

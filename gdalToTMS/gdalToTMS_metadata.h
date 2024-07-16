@@ -10,10 +10,9 @@
 #include <io_class.h>
 #include <io_file.h>
 #include <io_utily.h>
-#include <json_helper.h>
+#include <io_json.h>
 #include <util_algorithm.h>
 #include <util_entity.h>
-#include <unmanagedClass_tms.h>
 
 using namespace gb;
 
@@ -45,7 +44,7 @@ class gdalToTMS_metadata :public io_class
 {
 public:
 	gdalToTMS_metadata() {	}
-	void set(U_TMS u_param, callback cb);
+	void set(param_TMS p, callback cb);
 	void add(const GDALTiler& tiler, const TileCoordinate* coordinate);
 	void add(const gdalToTMS_metadata& otherMetadata);
 	void writeJsonFile(entity_tms ti);
@@ -57,7 +56,7 @@ public:
 	i_zoom maxZoom;
 	i_zoom minZoom;
 private:
-	U_TMS u_Param;
+	param_TMS m_param;
 };
 
 

@@ -1,8 +1,8 @@
 #include "gdalToTMS_metadata.h"
 
-void gdalToTMS_metadata::set(U_TMS u_param, callback cb)
+void gdalToTMS_metadata::set(param_TMS p, callback cb)
 {
-	u_Param = u_param;
+	m_param = p;
 	m_callback = cb;
 }
 
@@ -12,8 +12,8 @@ void gdalToTMS_metadata::add(const GDALTiler& tiler, const TileCoordinate* coord
 	CRSBounds _validBounds = tiler.bounds();
 	i_zoom zoom = coordinate->zoom;
 
-	maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? tiler.maxZoomLevel() : u_Param.f_TMSConfig.MaxZoom;
-	minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
+	maxZoom = (m_param.pTMS.maxZoom < 0) ? tiler.maxZoomLevel() : m_param.pTMS.maxZoom;
+	minZoom = (m_param.pTMS.minZoom < 0) ? 0 : m_param.pTMS.minZoom;
 
 	if ((1 + zoom) > vec_levelInfo.size()) {
 		vec_levelInfo.resize(1 + zoom, levelInfo());
@@ -53,8 +53,8 @@ void gdalToTMS_metadata::add(const gdalToTMS_metadata& otherMetadata)
 		for (size_t i = 0; i < otherMetadata.vec_levelInfo.size(); i++) {
 			vec_levelInfo[i].add(otherMetadata.vec_levelInfo[i]);
 		}
-		maxZoom = (u_Param.f_TMSConfig.MaxZoom < 0) ? otherMetadata.vec_levelInfo.size() - 1 : u_Param.f_TMSConfig.MaxZoom;
-		minZoom = (u_Param.f_TMSConfig.MinZoom < 0) ? 0 : u_Param.f_TMSConfig.MinZoom;
+		maxZoom = (m_param.pTMS.maxZoom < 0) ? otherMetadata.vec_levelInfo.size() - 1 : m_param.pTMS.maxZoom;
+		minZoom = (m_param.pTMS.minZoom < 0) ? 0 : m_param.pTMS.minZoom;
 
 		if (bounds.getMaxX() == bounds.getMinX()) {
 			bounds = _tileBounds;
@@ -84,21 +84,20 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	double validMaxX = validBounds.getMaxX();
 	double validMaxY = validBounds.getMaxY();
 
-	bool ziped = u_Param.f_TMSConfig.Gzip == 1;
+	bool ziped = m_param.pTMS.gzip == 1;
 	std::string strEpsgCode;
 	int iEpsgCode = 0;
 
-	if (strcmp(u_Param.f_TMSConfig.Profile, "geodetic") == 0) {
+	if (m_param.pTMS.profile == "geodetic") {
 		strEpsgCode = "EPSG:4326";
 		iEpsgCode = 4326;
 	}
-	else if (strcmp(u_Param.f_TMSConfig.Profile, "mercator") == 0) {
+	else if (m_param.pTMS.profile == "mercator") {
 		strEpsgCode = "EPSG:3857";
 		iEpsgCode = 3857;
 	}
-	else if (strcmp(u_Param.f_TMSConfig.Profile, "custom") == 0) {
-		std::string strWKT = u_Param.f_TMSConfig.CustomWKT;
-		strWKT = io_file::toLower(strWKT);
+	else if (m_param.pTMS.profile == "custom") {
+		std::string strWKT = io_file::toLower(m_param.pTMS.customSpatial);
 		if (io_utily::find(strWKT, "epsg")) {
 			strEpsgCode = strWKT;
 			iEpsgCode = std::stoi(io_file::replace(strWKT, "epsg:", ""));
@@ -112,24 +111,24 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	valueLayer["attribution"] = "AgCIM Studio";
 	valueLayer["contentType"] = ziped ? "gzip" : "";
 	valueLayer["description"] = "AgCIM Studio Terrain Server";
-	if (u_Param.f_TMSConfig.WriteVertexNormals) {
+	if (m_param.pTMS.writeVertexNormals) {
 		valueLayer["extensions"].append("octvertexnormals");
 	}
 	else {
-		valueLayer["extensions"].append(json_helper::getJsonEmptyArray());
+		valueLayer["extensions"].append(io_json::getJsonEmptyArray());
 	}
 	valueLayer["extensions"].clear();
-	if (strcmp(u_Param.f_TMSConfig.TMSFormat, "terrain") == 0) {
+	if (m_param.pTMS.tmsFormat == "terrain") {
 		valueLayer["format"] = "heightmap-1.0";
 	}
-	else if (strcmp(u_Param.f_TMSConfig.TMSFormat, "mesh") == 0) {
+	else if (m_param.pTMS.tmsFormat == "mesh") {
 		valueLayer["format"] = "quantized-mesh-1.0";
 	}
 	else {
 		valueLayer["format"] = "GDAL";
 	}
 	valueLayer["name"] = ti.i.inputFileName_WithoutExtension;
-	if (strcmp(u_Param.f_TMSConfig.Profile, "geodetic") == 0) {
+	if (m_param.pTMS.profile == "geodetic") {
 		valueLayer["projection"] = "EPSG:4326";
 	}
 	else {
@@ -169,21 +168,21 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	valueMeta["latLonBounds"]["north"] = validMaxY;
 	valueMeta["maxzoom"] = maxZoom;
 	valueMeta["minzoom"] = minZoom;
-	if (strcmp(u_Param.f_TMSConfig.Profile, "geodetic") == 0) {
+	if (m_param.pTMS.profile == "geodetic") {
 		valueMeta["proj"] = 4326;
 	}
 	else {
 		valueMeta["proj"] = 3857;
 	}
 	valueMeta["tiletrans"] = "tms";
-	valueMeta["type"] = u_Param.f_TMSConfig.TMSFormat;
+	valueMeta["type"] = m_param.pTMS.tmsFormat;
 	valueMeta["ziped"] = ziped;
 
 	std::string layer_Path = ti.o.outputFolderPath + symbol_dir + "layer" + symbol_ext + format_json;
-	json_helper::writeJson(layer_Path, valueLayer);
+	io_json::writeJson(layer_Path, valueLayer);
 
 	std::string meta_Path = ti.o.outputFolderPath + symbol_dir + "meta" + symbol_ext + format_json;
-	json_helper::writeJson(meta_Path, valueMeta);
+	io_json::writeJson(meta_Path, valueMeta);
 }
 
 void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
@@ -215,17 +214,16 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 	std::string strMaxY = io_utily::toString(validMaxY);
 	std::string strEpsgCode;
 	int iEpsgCode = 0;
-	if (io_utily::find(u_Param.f_TMSConfig.Profile, "geodetic")) {
+	if (m_param.pTMS.profile == "geodetic") {
 		strEpsgCode = "EPSG:4326";
 		iEpsgCode = 4326;
 	}
-	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "mercator")) {
+	else if (m_param.pTMS.profile == "mercator") {
 		strEpsgCode = "EPSG:3857";
 		iEpsgCode = 3857;
 	}
-	else if (io_utily::find(u_Param.f_TMSConfig.Profile, "custom")) {
-		std::string strWKT = u_Param.f_TMSConfig.CustomWKT;
-		strWKT = io_file::toLower(strWKT);
+	else if (m_param.pTMS.profile == "custom") {
+		std::string strWKT = io_file::toLower(m_param.pTMS.customSpatial);
 		if (io_utily::find(strWKT, "epsg")) {
 			strEpsgCode = strWKT;
 			iEpsgCode = std::stoi(io_file::replace(strWKT, "epsg:", ""));
@@ -234,10 +232,10 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 			strEpsgCode = "PROJ";
 		}
 	}
-	std::string strCTBFormat = u_Param.f_TMSConfig.TMSFormat;
-	std::string strTileSize = io_utily::toString(u_Param.f_TMSConfig.TileSize);
+	std::string strCTBFormat = m_param.pTMS.tmsFormat;
+	std::string strTileSize = io_utily::toString(m_param.pTMS.tileSize);
 	std::string strMimeType = strCTBFormat == format_jpg ? "image/jpeg" : strCTBFormat == format_png ? "image/png" : "image/tiff";
-	std::string strProfile = u_Param.f_TMSConfig.Profile;
+	std::string strProfile = m_param.pTMS.profile;
 
 
 	std::string xml;

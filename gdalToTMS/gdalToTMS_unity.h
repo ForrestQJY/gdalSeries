@@ -26,7 +26,7 @@
 #include <io_constant.h>
 #include <io_utily.h>
 #include <io_file.h>
-#include <json_helper.h>
+#include <io_json.h>
 #include <util_algorithm.h>
 #include <util_entity.h>
 
@@ -43,7 +43,7 @@ public:
 	~gdalToTMS_unity() {};
 
 public:
-	void set(U_TMS u_param, callback cb);
+	void set(param_TMS p, callback cb);
 	void setTif(entity_tms& et, Grid& grid);
 private:
 	void buildServer(entity_tms et, Grid* grid, gdalToTMS_metadata* metadata);
@@ -59,7 +59,7 @@ private:
 private:
 	int globalIteratorIndex = 0;
 private:
-	U_TMS u_Param;
+	param_TMS m_param;
 };
 
 #endif
