@@ -16,15 +16,13 @@ bool gdalToTMS_helper::convert()
 {
 	getTifFiles();
 	buildFiles();
-	carryEnd(m_param.pBasic.output);
+	carryEnd();
 	return true;
 }
 
 void gdalToTMS_helper::getTifFiles()
 {
-	io_composition::getList<entity_tms, std::string>(vec_entityTMS, m_param.pBasic.input, m_param.pBasic.output, format_tif, "");
-
-
+	vec_entityTMS = io_composition::getList<entity_tms>(m_param.pBasic, format_tif, "");
 	for (entity_tms& et : vec_entityTMS) {
 		et.gzip = m_param.pTMS.gzip == 1;
 		et.writeVertexNormals = m_param.pTMS.writeVertexNormals == 1;
@@ -37,6 +35,7 @@ void gdalToTMS_helper::getTifFiles()
 
 void gdalToTMS_helper::buildFiles()
 {
+	std::mutex mtx;
 	std::function<bool(int)> func = [&](int taskIndex) {
 		if (map_taskInterval.count(taskIndex) > 0) {
 			std::vector<int> vec_taskInterval = map_taskInterval[taskIndex];
@@ -45,9 +44,9 @@ void gdalToTMS_helper::buildFiles()
 				std::string result = "";
 				entity_tms& et = vec_entityTMS[index];
 				if (m_param.pBasic.overlayFile) {
-					io_file::deleteFolder(et.o.outputFolderPath);
+					io_file::deleteFolder(et.o.folderPath);
 				}
-				io_file::mkdirs(et.o.outputFolderPath);
+				io_file::mkdirs(et.o.folderPath);
 				et.threadIndex = taskIndex;
 				Grid grid;
 				getGrid(grid);
@@ -56,7 +55,9 @@ void gdalToTMS_helper::buildFiles()
 				unity.set(m_param, m_callback);
 				unity.setTif(et, grid);
 
-				progress(taskIndex, et.o.outputFileName_WithinExtension);
+				std::unique_lock<std::mutex> lock(mtx);
+				taskEnd(taskIndex, et.o.fileName_withinExtension);
+				lock.unlock();
 			}
 		}
 		return true;
@@ -71,7 +72,7 @@ void gdalToTMS_helper::getGrid(Grid& grid)
 		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 		if (!m_param.pTMS.customSpatial.empty()) {
 			OGRErr result;
-			std::string strCoordinate = io_file::toLower(m_param.pTMS.customSpatial);
+			std::string strCoordinate = io_utily::toLower(m_param.pTMS.customSpatial);
 			if (io_utily::find(strCoordinate, "epsg")) {
 				int epsgCode = 0;
 				util_coordinate::splitEPSG(epsgCode, strCoordinate);
@@ -94,7 +95,7 @@ void gdalToTMS_helper::getGrid(Grid& grid)
 		srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 		if (!m_param.pTMS.customSpatial.empty()) {
 			OGRErr result;
-			std::string strCoordinate = io_file::toLower(m_param.pTMS.customSpatial);
+			std::string strCoordinate = io_utily::toLower(m_param.pTMS.customSpatial);
 			if (io_utily::find(strCoordinate, "epsg")) {
 				int epsgCode = 0;
 				util_coordinate::splitEPSG(epsgCode, strCoordinate);

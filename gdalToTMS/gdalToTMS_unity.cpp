@@ -30,9 +30,9 @@ void gdalToTMS_unity::setTif(entity_tms& et, Grid& grid)
 
 void gdalToTMS_unity::buildServer(entity_tms et, Grid* grid, gdalToTMS_metadata* metadata)
 {
-	GDALDataset* poDataset = (GDALDataset*)GDALOpen(et.i.inputFilePath_UTF8.c_str(), GA_ReadOnly);
+	GDALDataset* poDataset = (GDALDataset*)GDALOpen(et.i.filePath_utf8.c_str(), GA_ReadOnly);
 	if (poDataset == NULL) {
-		m_callback.sendError("无法用GDAL识别数据:" + io_utily::appendBracket(et.i.inputFilePath));
+		m_callback.sendError("无法用GDAL识别数据:" + io_utily::appendBracket(et.i.filePath));
 		throw GBException("Error: could not open GDAL dataset");
 	}
 	gdalToTMS_metadata* threadMetadata = NULL;
@@ -41,7 +41,7 @@ void gdalToTMS_unity::buildServer(entity_tms et, Grid* grid, gdalToTMS_metadata*
 		threadMetadata->set(m_param, m_callback);
 	}
 
-	GBFileTileSerializer serializer(et.o.outputFolderPath + symbol_dir, m_param.pBasic.overlayFile);
+	GBFileTileSerializer serializer(et.o.folderPath + symbol_dir, m_param.pBasic.overlayFile);
 
 	try {
 		serializer.startSerialization();
@@ -193,8 +193,8 @@ void gdalToTMS_unity::buildJson(entity_tms et, Grid grid, gdalToTMS_metadata* me
 
 		// Create missing root tiles if it is necessary
 		if (m_param.pTMS.cesiumMetadata) {
-			std::string dirName0 = et.o.outputFolderPath + symbol_dir + "0" + symbol_dir + "0";
-			std::string dirName1 = et.o.outputFolderPath + symbol_dir + "0" + symbol_dir + "1";
+			std::string dirName0 = et.o.folderPath + symbol_dir + "0" + symbol_dir + "0";
+			std::string dirName1 = et.o.folderPath + symbol_dir + "0" + symbol_dir + "1";
 			std::string tileName0 = dirName0 + symbol_dir + "0" + symbol_ext + format_terrain;
 			std::string tileName1 = dirName1 + symbol_dir + "0" + symbol_ext + format_terrain;
 

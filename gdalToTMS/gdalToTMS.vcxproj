@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -49,7 +49,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CPL_DISABLE_DLL;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;NOMINMAX=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonDefine;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -66,7 +66,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CPL_DISABLE_DLL;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;NOMINMAX=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonDefine;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -81,7 +81,6 @@
     <ClCompile Include="gdalToTMS_helper.cpp" />
     <ClCompile Include="gdalToTMS_metadata.cpp" />
     <ClCompile Include="gdalToTMS_unity.cpp" />
-    <ClCompile Include="gdalToTMS_unmanaged.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

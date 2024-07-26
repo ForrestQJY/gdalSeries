@@ -6,7 +6,12 @@
 
 
 #pragma region terrainServer
-extern "C" UMANAGEAPI bool __stdcall tifToTMS(U_TMS* u_param);
+UMANAGEAPI tifToTMS(U_TMS* u_param)
+{
+    gdalToTMS_helper tms;
+    tms.initialize(*u_param);
+    return tms.convert();
+}
 
 #pragma endregion
 

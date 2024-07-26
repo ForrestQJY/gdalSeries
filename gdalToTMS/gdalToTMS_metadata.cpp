@@ -97,10 +97,10 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 		iEpsgCode = 3857;
 	}
 	else if (m_param.pTMS.profile == "custom") {
-		std::string strWKT = io_file::toLower(m_param.pTMS.customSpatial);
+		std::string strWKT = io_utily::toLower(m_param.pTMS.customSpatial);
 		if (io_utily::find(strWKT, "epsg")) {
 			strEpsgCode = strWKT;
-			iEpsgCode = std::stoi(io_file::replace(strWKT, "epsg:", ""));
+			iEpsgCode = std::stoi(io_utily::replace(strWKT, "epsg:", ""));
 		}
 		else {
 			strEpsgCode = "PROJ";
@@ -115,7 +115,7 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 		valueLayer["extensions"].append("octvertexnormals");
 	}
 	else {
-		valueLayer["extensions"].append(io_json::getJsonEmptyArray());
+		valueLayer["extensions"].append(io_json::toJsonEmptyArray());
 	}
 	valueLayer["extensions"].clear();
 	if (m_param.pTMS.tmsFormat == "terrain") {
@@ -127,7 +127,7 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	else {
 		valueLayer["format"] = "GDAL";
 	}
-	valueLayer["name"] = ti.i.inputFileName_WithoutExtension;
+	valueLayer["name"] = ti.i.fileName_withoutExtension;
 	if (m_param.pTMS.profile == "geodetic") {
 		valueLayer["projection"] = "EPSG:4326";
 	}
@@ -178,10 +178,10 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	valueMeta["type"] = m_param.pTMS.tmsFormat;
 	valueMeta["ziped"] = ziped;
 
-	std::string layer_Path = ti.o.outputFolderPath + symbol_dir + "layer" + symbol_ext + format_json;
+	std::string layer_Path = ti.o.folderPath + symbol_dir + "layer" + symbol_ext + format_json;
 	io_json::writeJson(layer_Path, valueLayer);
 
-	std::string meta_Path = ti.o.outputFolderPath + symbol_dir + "meta" + symbol_ext + format_json;
+	std::string meta_Path = ti.o.folderPath + symbol_dir + "meta" + symbol_ext + format_json;
 	io_json::writeJson(meta_Path, valueMeta);
 }
 
@@ -223,10 +223,10 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 		iEpsgCode = 3857;
 	}
 	else if (m_param.pTMS.profile == "custom") {
-		std::string strWKT = io_file::toLower(m_param.pTMS.customSpatial);
+		std::string strWKT = io_utily::toLower(m_param.pTMS.customSpatial);
 		if (io_utily::find(strWKT, "epsg")) {
 			strEpsgCode = strWKT;
-			iEpsgCode = std::stoi(io_file::replace(strWKT, "epsg:", ""));
+			iEpsgCode = std::stoi(io_utily::replace(strWKT, "epsg:", ""));
 		}
 		else {
 			strEpsgCode = "PROJ";
@@ -244,7 +244,7 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 	xml.append("\n");
 	xml.append("<TileMap version=\"1.0.0\" tilemapservice=\"http://tms.osgeo.org/1.0.0\">");
 	xml.append("\n");
-	xml.append("<Title>" + ti.i.inputFileName_WithinExtension + "</Title>");
+	xml.append("<Title>" + ti.i.fileName_withinExtension + "</Title>");
 	xml.append("\n");
 	xml.append("<Abstract></Abstract>");
 	xml.append("\n");
@@ -279,7 +279,7 @@ void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
 	xml.append("</TileMap>");
 
 
-	std::string xml_Path = ti.o.outputFolderPath + symbol_dir + "tilemapresource" + symbol_ext + format_xml;
+	std::string xml_Path = ti.o.folderPath + symbol_dir + "tilemapresource" + symbol_ext + format_xml;
 	std::ofstream outfile(xml_Path);
 	if (outfile) {
 		outfile << xml << std::endl;

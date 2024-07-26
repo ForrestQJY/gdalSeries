@@ -24,9 +24,6 @@
     <ClCompile Include="gdalToTMS_unity.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="gdalToTMS_unmanaged.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="gdalToTMS_metadata.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
