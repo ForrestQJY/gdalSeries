@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdalBuilder", "gdalBuilder\gdalBuilder.vcxproj", "{7236B1E6-DC3E-441C-8A80-ECFA9D9D616B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "process_gdal_build", "process_gdal_build\process_gdal_build.vcxproj", "{B8504411-972A-4D78-9430-4C14179C4F92}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdalConvert", "gdalConvert\gdalConvert.vcxproj", "{F4380F07-BBD3-42E0-A2FD-5498455F3561}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "process_gdal_toTMS", "process_gdal_toTMS\process_gdal_toTMS.vcxproj", "{D72CF688-2468-4733-824B-6B9C42EEEC27}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdalToTMS", "gdalToTMS\gdalToTMS.vcxproj", "{828CCD54-2E42-4D03-9259-86469F0ECFF4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "process_gdal_transform", "process_gdal_transform\process_gdal_transform.vcxproj", "{53C1763E-C728-454A-BEA2-F8E815981981}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +15,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7236B1E6-DC3E-441C-8A80-ECFA9D9D616B}.Debug|x64.ActiveCfg = Debug|x64
-		{7236B1E6-DC3E-441C-8A80-ECFA9D9D616B}.Debug|x64.Build.0 = Debug|x64
-		{7236B1E6-DC3E-441C-8A80-ECFA9D9D616B}.Release|x64.ActiveCfg = Release|x64
-		{7236B1E6-DC3E-441C-8A80-ECFA9D9D616B}.Release|x64.Build.0 = Release|x64
-		{F4380F07-BBD3-42E0-A2FD-5498455F3561}.Debug|x64.ActiveCfg = Debug|x64
-		{F4380F07-BBD3-42E0-A2FD-5498455F3561}.Debug|x64.Build.0 = Debug|x64
-		{F4380F07-BBD3-42E0-A2FD-5498455F3561}.Release|x64.ActiveCfg = Release|x64
-		{F4380F07-BBD3-42E0-A2FD-5498455F3561}.Release|x64.Build.0 = Release|x64
-		{828CCD54-2E42-4D03-9259-86469F0ECFF4}.Debug|x64.ActiveCfg = Debug|x64
-		{828CCD54-2E42-4D03-9259-86469F0ECFF4}.Debug|x64.Build.0 = Debug|x64
-		{828CCD54-2E42-4D03-9259-86469F0ECFF4}.Release|x64.ActiveCfg = Release|x64
-		{828CCD54-2E42-4D03-9259-86469F0ECFF4}.Release|x64.Build.0 = Release|x64
+		{B8504411-972A-4D78-9430-4C14179C4F92}.Debug|x64.ActiveCfg = Debug|x64
+		{B8504411-972A-4D78-9430-4C14179C4F92}.Debug|x64.Build.0 = Debug|x64
+		{B8504411-972A-4D78-9430-4C14179C4F92}.Release|x64.ActiveCfg = Release|x64
+		{B8504411-972A-4D78-9430-4C14179C4F92}.Release|x64.Build.0 = Release|x64
+		{D72CF688-2468-4733-824B-6B9C42EEEC27}.Debug|x64.ActiveCfg = Debug|x64
+		{D72CF688-2468-4733-824B-6B9C42EEEC27}.Debug|x64.Build.0 = Debug|x64
+		{D72CF688-2468-4733-824B-6B9C42EEEC27}.Release|x64.ActiveCfg = Release|x64
+		{D72CF688-2468-4733-824B-6B9C42EEEC27}.Release|x64.Build.0 = Release|x64
+		{53C1763E-C728-454A-BEA2-F8E815981981}.Debug|x64.ActiveCfg = Debug|x64
+		{53C1763E-C728-454A-BEA2-F8E815981981}.Debug|x64.Build.0 = Debug|x64
+		{53C1763E-C728-454A-BEA2-F8E815981981}.Release|x64.ActiveCfg = Release|x64
+		{53C1763E-C728-454A-BEA2-F8E815981981}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

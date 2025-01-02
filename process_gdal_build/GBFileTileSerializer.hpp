@@ -39,9 +39,9 @@ class GB_DLL gb::GBFileTileSerializer :
 	public gb::TerrainSerializer,
 	public gb::MeshSerializer {
 public:
-	GBFileTileSerializer(const std::string& outputFolder, bool resume) :
-		mOutputFolder(outputFolder),
-		mResume(resume) {}
+	GBFileTileSerializer(const std::string& _path_folder, bool _overlayFile) :
+		path_folder(_path_folder),
+		overlayFile(_overlayFile) {}
 
 	/// Start a new serialization task
 	virtual void startSerialization() {};
@@ -66,9 +66,9 @@ public:
 
 protected:
 	/// The target directory where serializing
-	std::string mOutputFolder;
+	std::string path_folder;
 	/// Do not overwrite existing files
-	bool mResume;
+	bool overlayFile;
 };
 
 #endif

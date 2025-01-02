@@ -131,8 +131,9 @@ public:
 	inline CRSPoint
 		pixelsToCrs(const PixelPoint& pixel, i_zoom zoom) const {
 		double res = resolution(zoom);
-
-		return CRSPoint((pixel.x * res) - mXOriginShift, (pixel.y * res) - mYOriginShift);
+		double x = (pixel.x * res) - mXOriginShift;
+		double y = (pixel.y * res) - mYOriginShift;
+		return CRSPoint(x, y);
 	}
 
 	/// Get the pixel location represented by a CRS point and zoom level
@@ -165,7 +166,6 @@ public:
 
 		const CRSPoint lowerLeft = pixelsToCrs(pxLowerLeft, coord.zoom);
 		const CRSPoint upperRight = pixelsToCrs(pxUpperRight, coord.zoom);
-
 		return CRSBounds(lowerLeft, upperRight);
 	}
 

@@ -10,46 +10,26 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="GBFileOutputStream.cpp" />
-    <ClCompile Include="GBFileTileSerializer.cpp" />
-    <ClCompile Include="GBZOutputStream.cpp" />
-    <ClCompile Include="GDALDatasetReader.cpp" />
-    <ClCompile Include="GDALTile.cpp" />
-    <ClCompile Include="GDALTiler.cpp" />
-    <ClCompile Include="GlobalGeodetic.cpp" />
-    <ClCompile Include="GlobalMercator.cpp" />
-    <ClCompile Include="MeshTile.cpp" />
-    <ClCompile Include="MeshTiler.cpp" />
-    <ClCompile Include="TerrainTile.cpp" />
-    <ClCompile Include="TerrainTiler.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="gdalBuilder.rc" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{7236b1e6-dc3e-441c-8a80-ecfa9d9d616b}</ProjectGuid>
-    <RootNamespace>gdalBuilder</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <ProjectGuid>{b8504411-972a-4d78-9430-4c14179c4f92}</ProjectGuid>
+    <RootNamespace>processgdalbuild</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -69,8 +49,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NOMINMAX=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\process_gdal_build;D:\gitCode\package\common\commonIO;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,8 +66,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;NOMINMAX=1</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\gdalBuilder;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonUnmanaged;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\gitCode\gdalSeries\process_gdal_build;D:\gitCode\package\common\commonIO;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,6 +77,26 @@
       <AdditionalDependencies>D:\gitCode\vcpkg\installed\x64-windows\lib\gdal.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="GBFileOutputStream.cpp" />
+    <ClCompile Include="GBFileTileSerializer.cpp" />
+    <ClCompile Include="GBZOutputStream.cpp" />
+    <ClCompile Include="GDALDatasetReader.cpp" />
+    <ClCompile Include="GDALTile.cpp" />
+    <ClCompile Include="GDALTiler.cpp" />
+    <ClCompile Include="GlobalGeodetic.cpp" />
+    <ClCompile Include="GlobalMercator.cpp" />
+    <ClCompile Include="MeshTile.cpp" />
+    <ClCompile Include="MeshTiler.cpp" />
+    <ClCompile Include="TerrainTile.cpp" />
+    <ClCompile Include="TerrainTiler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="process_gdal_build.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

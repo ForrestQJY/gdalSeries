@@ -83,10 +83,10 @@ fileExists(const std::string& fileName) {
  * Returns if the specified Tile Coordinate should be serialized
  */
 bool gb::GBFileTileSerializer::mustSerializeCoordinate(const gb::TileCoordinate* coordinate) {
-	if (!mResume)
+	if (!overlayFile)
 		return true;
 
-	const string fileName = getTileFilename(coordinate, mOutputFolder, "terrain");
+	const string fileName = getTileFilename(coordinate, path_folder, "terrain");
 	return !fileExists(fileName);
 }
 
@@ -97,9 +97,9 @@ bool gb::GBFileTileSerializer::mustSerializeCoordinate(const gb::TileCoordinate*
 bool
 gb::GBFileTileSerializer::serializeTile(const gb::GDALTile* tile, GDALDriver* driver, const char* extension, CPLStringList& creationOptions) {
 	const TileCoordinate* coordinate = tile;
-	const string fileName = getTileFilename(coordinate, mOutputFolder, extension);
+	const string fileName = getTileFilename(coordinate, path_folder, extension);
 	if (io_file::exists(fileName)) {
-		if (!mResume)
+		if (!overlayFile)
 		{
 			return true;
 		}
@@ -126,9 +126,9 @@ gb::GBFileTileSerializer::serializeTile(const gb::GDALTile* tile, GDALDriver* dr
 bool
 gb::GBFileTileSerializer::serializeTile(const gb::TerrainTile* tile, bool isGzip) {
 	const TileCoordinate* coordinate = tile;
-	const string fileName = getTileFilename(coordinate, mOutputFolder, "terrain");
+	const string fileName = getTileFilename(coordinate, path_folder, "terrain");
 	if (io_file::exists(fileName)) {
-		if (!mResume)
+		if (!overlayFile)
 		{
 			return true;
 		}
@@ -159,9 +159,9 @@ gb::GBFileTileSerializer::serializeTile(const gb::TerrainTile* tile, bool isGzip
 bool
 gb::GBFileTileSerializer::serializeTile(const gb::MeshTile* tile, bool isGzip, bool writeVertexNormals) {
 	const TileCoordinate* coordinate = tile;
-	const string fileName = getTileFilename(coordinate, mOutputFolder, "terrain");
+	const string fileName = getTileFilename(coordinate, path_folder, "terrain");
 	if (io_file::exists(fileName)) {
-		if (!mResume)
+		if (!overlayFile)
 		{
 			return true;
 		}

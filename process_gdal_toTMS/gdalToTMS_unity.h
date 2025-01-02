@@ -8,6 +8,9 @@
 
 #include <future>
 
+#include <tbb/parallel_for.h>
+#include <tbb/mutex.h>
+
 #include <GBFileTileSerializer.hpp>
 #include <GDALDatasetReader.hpp>
 #include <GDALSerializer.hpp>
@@ -24,11 +27,11 @@
 
 #include <io_class.h>
 #include <io_constant.h>
-#include <io_utily.h>
+#include <io_entity.h>
 #include <io_file.h>
 #include <io_json.h>
+#include <io_utily.h>
 #include <util_algorithm.h>
-#include <util_entity.h>
 
 #include "gdalToTMS_metadata.h"
 
@@ -46,12 +49,13 @@ public:
 	void set(param_TMS p, callback cb);
 	void setTif(entity_tms& et, Grid& grid);
 private:
-	void buildServer(entity_tms et, Grid* grid, gdalToTMS_metadata* metadata);
+	void buildServer(entity_tms et, Grid grid, gdalToTMS_metadata* metadata);
 	void buildGDAL(entity_tms et, GDALSerializer& serializer, const RasterTiler& tiler, gdalToTMS_metadata* metadata);
 	void buildMesh(entity_tms et, MeshSerializer& serializer, const MeshTiler& tiler, gdalToTMS_metadata* metadata);
 	void buildMetadata(entity_tms et, const RasterTiler& tiler, gdalToTMS_metadata* metadata);
 	void buildTerrain(entity_tms et, TerrainSerializer& serializer, const TerrainTiler& tiler, gdalToTMS_metadata* metadata);
 	void buildJson(entity_tms et, Grid grid, gdalToTMS_metadata* metadata);
+
 	std::string createEmptyRootElevationFile(std::string& fileName, const Grid& grid, const TileCoordinate& coord);
 	void reportProgress(entity_tms et, int completedCount);
 private:

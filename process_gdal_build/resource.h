@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by gdalBuilder.rc
+// Used by process_gdal_build.rc
 
 // 新对象的下一组默认值
 // 

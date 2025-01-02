@@ -18,27 +18,9 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="gdalToTMS_helper.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="gdalToTMS_unity.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="gdalToTMS_metadata.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gdalToTMS_helper.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="gdalToTMS_unity.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="gdalToTMS_unmanaged.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="gdalToTMS_metadata.h">
+    <ClInclude Include="transform_unmanaged.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -46,7 +28,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="gdalToTMS.rc">
+    <ResourceCompile Include="process_gdal_transform.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

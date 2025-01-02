@@ -15,50 +15,38 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TerrainTiler.cpp">
+    <ClCompile Include="gdalToTMS_unity.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainTile.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MeshTiler.cpp">
+    <ClCompile Include="gdalToTMS_launch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MeshTile.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GlobalMercator.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GlobalGeodetic.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GDALTiler.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GDALTile.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GDALDatasetReader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GBZOutputStream.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GBFileTileSerializer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GBFileOutputStream.cpp">
+    <ClCompile Include="gdalToTMS_metadata.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gdalToTMS_launch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gdalToTMS_metadata.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gdalToTMS_unity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gdalToTMS_unmanaged.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="gdalBuilder.rc">
+    <ResourceCompile Include="process_gdal_toTMS.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
