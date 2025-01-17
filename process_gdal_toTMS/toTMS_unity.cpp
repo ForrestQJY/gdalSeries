@@ -1,20 +1,76 @@
-#include "gdalToTMS_unity.h"
+#include "toTMS_unity.h"
 
 
-void gdalToTMS_unity::set(param_TMS p, callback cb)
+void toTMS_unity::set(param_TMS p, callback cb)
 {
 	m_param = p;
 	m_callback = cb;
 }
 
 
-void gdalToTMS_unity::setTif(entity_tms& et, Grid& grid)
+void toTMS_unity::setTif(entity_tms& et, Grid& grid)
 {
-	gdalToTMS_metadata* metadata = new gdalToTMS_metadata();
+	int threadCount = m_param.pBasic.runnableThread > 0 ? m_param.pBasic.runnableThread : CPLGetNumCPUs();
+	gb::TilerOptions tilerOptions;
+	toTMS_metadata* metadata = new toTMS_metadata();
 	metadata->set(m_param, m_callback);
+	std::function<void()> func = [&]() {
+		metadata->set(m_param, m_callback);
+		GDALDataset* poDataset = (GDALDataset*)GDALOpen(et.i.path_file_utf8.c_str(), GA_ReadOnly);
+		if (poDataset == NULL) {
+			m_callback.sendError("无法用GDAL识别数据:" + io_utily::appendBracket(et.i.path_file));
+			throw GBException("Error: could not open GDAL dataset");
+		}
+		toTMS_metadata* threadMetadata = NULL;
+		if (metadata) {
+			threadMetadata = new toTMS_metadata();
+			threadMetadata->set(m_param, m_callback);
+		}
+		GBFileTileSerializer serializer(et.o.path_folder, m_param.pBasic.overlayFile);
+		try {
+			serializer.startSerialization();
+			if (m_param.pTMSQuality.cesiumMetadata) {
+				const RasterTiler tiler(poDataset, grid, tilerOptions);
+				buildMetadata(et, tiler, threadMetadata);
+			}
+			else if (m_param.pTMS.tmsFormat == "terrain") {
+				const TerrainTiler tiler(poDataset, grid, tilerOptions);
+				buildTerrain(et, serializer, tiler, threadMetadata);
+			}
+			else if (m_param.pTMS.tmsFormat == "mesh") {
+				const MeshTiler tiler(poDataset, grid, tilerOptions, m_param.pTMSQuality.meshQualityFactor);
+				buildMesh(et, serializer, tiler, threadMetadata);
+			}
+			else {
+				const RasterTiler tiler(poDataset, grid, tilerOptions);
+				buildGDAL(et, serializer, tiler, threadMetadata);
+			}
 
+		}
+		catch (GBException& e) {
+			m_callback.sendError(e.what());
+		}
 
-	buildServer(et, grid, metadata);
+		serializer.endSerialization();
+		GDALClose(poDataset);
+		if (threadMetadata) {
+			static std::mutex mutex;
+			std::lock_guard<std::mutex> lock(mutex);
+
+			metadata->add(*threadMetadata);
+			delete threadMetadata;
+		}
+		};
+
+	std::vector<std::future<void>> tasks;
+	for (int i = 0; i < threadCount; ++i) {
+		std::packaged_task<void()> task(func);
+		tasks.push_back(task.get_future());
+		std::thread(std::move(task)).detach();
+	}
+	for (auto& task : tasks) {
+		task.wait();
+	}
 
 	buildJson(et, grid, metadata);
 	if (metadata) {
@@ -32,16 +88,16 @@ void gdalToTMS_unity::setTif(entity_tms& et, Grid& grid)
 	}
 }
 
-void gdalToTMS_unity::buildServer(entity_tms et, Grid grid, gdalToTMS_metadata* metadata)
+void toTMS_unity::buildServer(entity_tms et, Grid grid, toTMS_metadata* metadata)
 {
 	GDALDataset* poDataset = (GDALDataset*)GDALOpen(et.i.path_file_utf8.c_str(), GA_ReadOnly);
 	if (poDataset == NULL) {
 		m_callback.sendError("无法用GDAL识别数据:" + io_utily::appendBracket(et.i.path_file));
 		throw GBException("Error: could not open GDAL dataset");
 	}
-	gdalToTMS_metadata* threadMetadata = NULL;
+	toTMS_metadata* threadMetadata = NULL;
 	if (metadata) {
-		threadMetadata = new gdalToTMS_metadata();
+		threadMetadata = new toTMS_metadata();
 		threadMetadata->set(m_param, m_callback);
 	}
 
@@ -84,7 +140,7 @@ void gdalToTMS_unity::buildServer(entity_tms et, Grid grid, gdalToTMS_metadata* 
 	return;
 }
 
-void gdalToTMS_unity::buildGDAL(entity_tms et, GDALSerializer& serializer, const RasterTiler& tiler, gdalToTMS_metadata* metadata)
+void toTMS_unity::buildGDAL(entity_tms et, GDALSerializer& serializer, const RasterTiler& tiler, toTMS_metadata* metadata)
 {
 	GDALDriver* poDriver = GetGDALDriverManager()->GetDriverByName(m_param.pTMS.tmsFormat.c_str());
 
@@ -99,14 +155,14 @@ void gdalToTMS_unity::buildGDAL(entity_tms et, GDALSerializer& serializer, const
 	}
 
 	const char* extension = poDriver->GetMetadataItem(GDAL_DMD_EXTENSION);
-
+	
 	i_zoom maxZoom = tiler.maxZoomLevel();
 	i_zoom minZoom = 0;
 	if (m_param.pTMS.maxZoom > 0) {
 		maxZoom = m_param.pTMS.maxZoom;
 	}
 	if (m_param.pTMS.minZoom > 0) {
-		maxZoom = m_param.pTMS.minZoom;
+		minZoom = m_param.pTMS.minZoom;
 	}
 
 	RasterIterator iter(tiler, maxZoom, minZoom);
@@ -127,7 +183,7 @@ void gdalToTMS_unity::buildGDAL(entity_tms et, GDALSerializer& serializer, const
 	}
 }
 
-void gdalToTMS_unity::buildMesh(entity_tms et, MeshSerializer& serializer, const MeshTiler& tiler, gdalToTMS_metadata* metadata)
+void toTMS_unity::buildMesh(entity_tms et, MeshSerializer& serializer, const MeshTiler& tiler, toTMS_metadata* metadata)
 {
 	i_zoom maxZoom = tiler.maxZoomLevel();
 	i_zoom minZoom = 0;
@@ -135,7 +191,7 @@ void gdalToTMS_unity::buildMesh(entity_tms et, MeshSerializer& serializer, const
 		maxZoom = m_param.pTMS.maxZoom;
 	}
 	if (m_param.pTMS.minZoom > 0) {
-		maxZoom = m_param.pTMS.minZoom;
+		minZoom = m_param.pTMS.minZoom;
 	}
 	MeshIterator iter(tiler, maxZoom, minZoom);
 	int completedCount = et.incrementIterator(iter, 0);
@@ -156,7 +212,7 @@ void gdalToTMS_unity::buildMesh(entity_tms et, MeshSerializer& serializer, const
 	}
 }
 
-void gdalToTMS_unity::buildMetadata(entity_tms et, const RasterTiler& tiler, gdalToTMS_metadata* metadata)
+void toTMS_unity::buildMetadata(entity_tms et, const RasterTiler& tiler, toTMS_metadata* metadata)
 {
 	i_zoom maxZoom = tiler.maxZoomLevel();
 	i_zoom minZoom = 0;
@@ -164,7 +220,7 @@ void gdalToTMS_unity::buildMetadata(entity_tms et, const RasterTiler& tiler, gda
 		maxZoom = m_param.pTMS.maxZoom;
 	}
 	if (m_param.pTMS.minZoom > 0) {
-		maxZoom = m_param.pTMS.minZoom;
+		minZoom = m_param.pTMS.minZoom;
 	}
 	RasterIterator iter(tiler, maxZoom, minZoom);
 	int completedCount = et.incrementIterator(iter, 0);
@@ -178,7 +234,7 @@ void gdalToTMS_unity::buildMetadata(entity_tms et, const RasterTiler& tiler, gda
 	}
 }
 
-void gdalToTMS_unity::buildTerrain(entity_tms et, TerrainSerializer& serializer, const TerrainTiler& tiler, gdalToTMS_metadata* metadata)
+void toTMS_unity::buildTerrain(entity_tms et, TerrainSerializer& serializer, const TerrainTiler& tiler, toTMS_metadata* metadata)
 {
 	i_zoom maxZoom = tiler.maxZoomLevel();
 	i_zoom minZoom = 0;
@@ -186,7 +242,7 @@ void gdalToTMS_unity::buildTerrain(entity_tms et, TerrainSerializer& serializer,
 		maxZoom = m_param.pTMS.maxZoom;
 	}
 	if (m_param.pTMS.minZoom > 0) {
-		maxZoom = m_param.pTMS.minZoom;
+		minZoom = m_param.pTMS.minZoom;
 	}
 
 	TerrainIterator iter(tiler, maxZoom, minZoom);
@@ -208,7 +264,7 @@ void gdalToTMS_unity::buildTerrain(entity_tms et, TerrainSerializer& serializer,
 	}
 }
 
-void gdalToTMS_unity::buildJson(entity_tms et, Grid grid, gdalToTMS_metadata* metadata)
+void toTMS_unity::buildJson(entity_tms et, Grid grid, toTMS_metadata* metadata)
 {
 	if (m_param.pTMSQuality.cesiumFriendly && m_param.pTMS.geographicProjectionFormat == "geodetic" && m_param.pTMS.minZoom <= 0) {
 
@@ -256,7 +312,7 @@ void gdalToTMS_unity::buildJson(entity_tms et, Grid grid, gdalToTMS_metadata* me
 
 }
 
-std::string gdalToTMS_unity::createEmptyRootElevationFile(std::string& fileName, const Grid& grid, const TileCoordinate& coord)
+std::string toTMS_unity::createEmptyRootElevationFile(std::string& fileName, const Grid& grid, const TileCoordinate& coord)
 {
 	GDALDriver* poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
 
@@ -331,9 +387,12 @@ std::string gdalToTMS_unity::createEmptyRootElevationFile(std::string& fileName,
 	return fileName;
 }
 
-void gdalToTMS_unity::reportProgress(entity_tms et, int completedCount)
+void toTMS_unity::reportProgress(entity_tms et, int completedCount)
 {
 	mtx.lock();
+	std::string strTask = io_utily::lengthSplicing(completedCount, et.taskCount, "/");
+	std::string strMessage = "已完成 " + strTask;
+	m_callback.sendMessage(strMessage);
 	m_callback.sendProgress(completedCount, et.taskCount);
 	mtx.unlock();
 }

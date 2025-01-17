@@ -3,6 +3,7 @@
 
 
 
+#include <io_attr.h>
 #include <io_constant.h>
 #include <geo_gdal.h>
 #include <util_spatial.h>
@@ -15,8 +16,8 @@
 #include <ogr_geometry.h>  
 #include <ogr_spatialref.h>  
 #include <ogr_srs_api.h>  
+#include "transform_launch.h"
 
-#pragma region coordinateConvert
 
 UMANAGEAPI transform_coordSystem(const char* sourceCoord, const char* targetCoord, double sX, double sY, double sZ, double& tX, double& tY, double& tZ)
 {
@@ -50,9 +51,20 @@ UMANAGEAPI transform_coordSystem_Array(const char* sourceCoord, const char* targ
 	return true;
 }
 
+UMANAGEAPI transform_file(U_Transform* u_param)
+{
+	transform_launch tl;
+	tl.initialize(*u_param);
+	return tl.toTransform();
+}
 
-#pragma endregion
 
+UMANAGEAPI transform_fileInformation(U_Transform* u_param)
+{
+	transform_launch tl;
+	tl.initialize(*u_param);
+	return tl.toInformation();
+}
 
 
 #endif

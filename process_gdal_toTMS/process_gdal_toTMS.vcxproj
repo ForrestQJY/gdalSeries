@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -78,16 +78,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gdalToTMS_launch.cpp" />
-    <ClCompile Include="gdalToTMS_metadata.cpp" />
-    <ClCompile Include="gdalToTMS_unity.cpp" />
+    <ClCompile Include="toTMS_launch.cpp" />
+    <ClCompile Include="toTMS_metadata.cpp" />
+    <ClCompile Include="toTMS_unity.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gdalToTMS_launch.h" />
-    <ClInclude Include="gdalToTMS_metadata.h" />
-    <ClInclude Include="gdalToTMS_unity.h" />
-    <ClInclude Include="gdalToTMS_unmanaged.h" />
+    <ClInclude Include="toTMS_launch.h" />
+    <ClInclude Include="toTMS_metadata.h" />
+    <ClInclude Include="toTMS_unity.h" />
+    <ClInclude Include="toTMS_unmanaged.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
-#ifndef _GDALTOTMS_METADATA_H_
-#define _GDALTOTMS_METADATA_H_
+#ifndef _TOTMS_METADATA_H_
+#define _TOTMS_METADATA_H_
 
 #include <vector>
 
@@ -40,13 +40,13 @@ public:
 	int finalX; 
 	int finalY;
 };
-class gdalToTMS_metadata :public io_class
+class toTMS_metadata :public io_class
 {
 public:
-	gdalToTMS_metadata() {	}
+	toTMS_metadata() {	}
 	void set(param_TMS p, callback cb);
 	void add(const GDALTiler& tiler, const TileCoordinate* coordinate);
-	void add(const gdalToTMS_metadata& otherMetadata);
+	void add(const toTMS_metadata& otherMetadata);
 	void writeJsonFile(entity_tms ti);
 	void writeXmlFile(entity_tms ti);
 public:

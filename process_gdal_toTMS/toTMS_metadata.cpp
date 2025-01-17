@@ -1,12 +1,12 @@
-#include "gdalToTMS_metadata.h"
+#include "toTMS_metadata.h"
 
-void gdalToTMS_metadata::set(param_TMS p, callback cb)
+void toTMS_metadata::set(param_TMS p, callback cb)
 {
 	m_param = p;
 	m_callback = cb;
 }
 
-void gdalToTMS_metadata::add(const GDALTiler& tiler, const TileCoordinate* coordinate)
+void toTMS_metadata::add(const GDALTiler& tiler, const TileCoordinate* coordinate)
 {
 	CRSBounds _tileBounds = tiler.grid().tileBounds(*coordinate);
 	CRSBounds _validBounds = tiler.bounds();
@@ -41,7 +41,7 @@ void gdalToTMS_metadata::add(const GDALTiler& tiler, const TileCoordinate* coord
 	}
 }
 
-void gdalToTMS_metadata::add(const gdalToTMS_metadata& otherMetadata)
+void toTMS_metadata::add(const toTMS_metadata& otherMetadata)
 {
 	if (otherMetadata.vec_levelInfo.size() > 0) {
 		const CRSBounds& _tileBounds = otherMetadata.bounds;
@@ -77,7 +77,7 @@ void gdalToTMS_metadata::add(const gdalToTMS_metadata& otherMetadata)
 	}
 }
 
-void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
+void toTMS_metadata::writeJsonFile(entity_tms ti)
 {
 	double validMinX = validBounds.getMinX();
 	double validMinY = validBounds.getMinY();
@@ -185,7 +185,7 @@ void gdalToTMS_metadata::writeJsonFile(entity_tms ti)
 	io_json::writeJson(meta_Path, valueMeta);
 }
 
-void gdalToTMS_metadata::writeXmlFile(entity_tms ti)
+void toTMS_metadata::writeXmlFile(entity_tms ti)
 {
 	OGRSpatialReference sOGRSpatialReference;
 	OGRSpatialReference tOGRSpatialReference;

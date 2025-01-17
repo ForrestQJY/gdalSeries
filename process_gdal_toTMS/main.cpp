@@ -1,17 +1,17 @@
 #include <io_constant.h>
-#include "gdalToTMS_unmanaged.h"
+#include "toTMS_unmanaged.h"
 
 #include <string>
 int main(int argc, const char* argv[]) {
 	U_TMS u_param;
 	u_param.f_Basic.AdaptiveFrontEnd = 1;
-	u_param.f_Basic.Input = "E:\\data\\tif\\Ó°Ïñ\\ÑÕÉ«´íÂÒ\\shejizhidu12231_jz4490.tif";
-	u_param.f_Basic.Output = "E:\\out\\3";
-	u_param.f_Basic.RunnableThread = 16;
+	u_param.f_Basic.Input = "E:\\tile1.tif";
+	u_param.f_Basic.Output = "E:\\out\\tile1";
+	u_param.f_Basic.RunnableThread = 1;
 	u_param.f_Basic.OverlayFile = 0;
 
-	u_param.f_TMS.TMSFormat = "png"; /*"terrain mesh png jpg tiff*/
-	u_param.f_TMS.GeographicProjectionFormat = "mercator";/*mercator geodetic*/
+	u_param.f_TMS.TMSFormat = "mesh"; /*"terrain mesh png jpg tiff*/
+	u_param.f_TMS.GeographicProjectionFormat = "geodetic";/*mercator geodetic*/
 	u_param.f_TMS.Gzip = 0;
 	u_param.f_TMS.MaxZoom = 0;
 	u_param.f_TMS.MinZoom = 0;

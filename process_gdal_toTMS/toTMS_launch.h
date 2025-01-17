@@ -1,5 +1,5 @@
-#ifndef _GDALTOTMS_LAUNCH_H_
-#define _GDALTOTMS_LAUNCH_H_
+#ifndef _TOTMS_LAUNCH_H_
+#define _TOTMS_LAUNCH_H_
 
 #ifdef _HAS_STD_BYTE
 #undef _HAS_STD_BYTE
@@ -37,23 +37,23 @@
 #include <GlobalMercator.hpp>
 #include <Grid.hpp>
 
-#include "gdalToTMS_unity.h"
+#include "toTMS_unity.h"
 
 using namespace gb;
 
 
-class gdalToTMS_launch :public io_class
+class toTMS_launch :public io_class
 {
 public:
-	gdalToTMS_launch();
-	~gdalToTMS_launch() {};
+	toTMS_launch();
+	~toTMS_launch() {};
 public:
 	void initialize(U_TMS u_param);
 	bool toImagery();
 	bool toTerrain();
 	void getTifFiles();
 	void buildFiles();
-	void getGrid(Grid& grid);
+	bool getGrid(Grid& grid);
 private:
 	std::vector<entity_tms> vec_entityTMS;
 private:

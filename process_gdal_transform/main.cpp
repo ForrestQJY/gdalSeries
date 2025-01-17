@@ -1,31 +1,67 @@
 #include "transform_unmanaged.h"
 
+class num {
+public:
+	num() {}
+	num(double x, double y, double z) :sx(x), sy(y), sz(z) {}
+public:
+	double sx = 0;
+	double sy = 0;
+	double sz = 0;
+	double tx = 0;
+	double ty = 0;
+	double tz = 0;
+	double ex = 0;
+	double ey = 0;
+	double ez = 0;
+};
 
 int main(int argc, const char* argv[]) {
-	const char* source = "PROJCS[\"NJ08_118_50_CM\",GEOGCS[\"GCS_GRS_1980\",DATUM[\"D_GRS_1980\",SPHEROID[\"GRS_1980\",6378137.0,298.257222101]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Gauss_Kruger\"],PARAMETER[\"False_Easting\",500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",118.8333333333333],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]],VERTCS[\"EGM96_Geoid\",VDATUM[\"EGM96_Geoid\"],PARAMETER[\"Vertical_Shift\",0.0],PARAMETER[\"Direction\",1.0],UNIT[\"Meter\",1.0],AUTHORITY[\"EPSG\",5773]]";
+	const char* source = "EPSG:4978";
 	const char* target = "EPSG:4326";
-	double sX = 497144.56765650876, sY = 3540698.2920209286, sZ = 11.580780273028754, tX = 0, tY = 0, tZ = 0;
 
-	transform_coordSystem(source, target, sX, sY, sZ, tX, tY, tZ);
+	//num n1(-2348712.20201754, 5404849.321179945, 2431891.432501744);
+	//num n2(-2295257.86964383, 5407288.682376011, 2476785.363652067);
+	num n3(113.48766697316626, 22.56031199279221, 169.32368773035705);
+	num n4(112.9999999598919, 22.999995766160485, 169.17392709944397);
 
-	double* arrarX = new double[5] 
-		{
-			459141.000000,
-			458791.090000,
-			474814.57,
-			473229.8563
-		};
-	double* arrarY = new double[5] 
-		{
-			0, 
-			3846636.680000, 
-			3849566.63,
-			3843016.885			
-		};
-	double* arrarZ = new double[5] {114.000000, 172.000000, 100, 107};
 
-	transform_coordSystem_Array(source, target, 4, arrarX, arrarY, arrarZ);
+	std::vector<num> vec_num{ n3 ,n4 };
 
-	transform_coordSystem_Array(target, source, 4, arrarX, arrarY, arrarZ);
+	for (num& n : vec_num)
+	{
+		transform_coordSystem(target, source, n.sx, n.sy, n.sz, n.tx, n.ty, n.tz);
+		transform_coordSystem(source, target, n.tx, n.ty, n.tz, n.ex, n.ey, n.ez);
+		int a = 0;
+	}
+
+	//double* arrarX = new double[2]
+	//	{
+	//		-2348712.20201754,
+	//		-2295257.8696438335,
+	//	};
+	//double* arrarY = new double[2]
+	//	{
+	//		5404849.321179945,
+	//		5407288.682376011
+	//	};
+	//double* arrarZ = new double[2] 
+	//	{
+	//		2431891.432501744,
+	//		2476785.363652067
+	//	};
+
+	//transform_coordSystem_Array(source, target, 2, arrarX, arrarY, arrarZ);
+	//											
+	//transform_coordSystem_Array(target, source, 2, arrarX, arrarY, arrarZ);
+	//U_Transform u_param;
+	//u_param.f_Basic.Input = "E:\\t";
+	//u_param.f_Basic.Output = "E:\\t\\o";
+	//u_param.f_Transform.TargetSpatial = "EPSG:4547";
+	//u_param.f_Info.ProvideError = 1;
+	//u_param.f_Info.ProvideMessage = 1;
+	//u_param.f_Info.ProvideWarning = 1;
+
+	//transform_fileInformation(&u_param);
 	return true;
 }

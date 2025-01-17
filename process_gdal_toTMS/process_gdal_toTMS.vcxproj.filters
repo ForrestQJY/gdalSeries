@@ -15,30 +15,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gdalToTMS_unity.cpp">
+    <ClCompile Include="toTMS_unity.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="gdalToTMS_launch.cpp">
+    <ClCompile Include="toTMS_launch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="gdalToTMS_metadata.cpp">
+    <ClCompile Include="toTMS_metadata.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gdalToTMS_launch.h">
+    <ClInclude Include="toTMS_launch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="gdalToTMS_metadata.h">
+    <ClInclude Include="toTMS_metadata.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="gdalToTMS_unity.h">
+    <ClInclude Include="toTMS_unity.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="gdalToTMS_unmanaged.h">
+    <ClInclude Include="toTMS_unmanaged.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
