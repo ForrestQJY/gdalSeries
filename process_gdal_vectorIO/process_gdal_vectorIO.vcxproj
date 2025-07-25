@@ -13,8 +13,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{53c1763e-c728-454a-bea2-f8e815981981}</ProjectGuid>
-    <RootNamespace>processgdaltransform</RootNamespace>
+    <ProjectGuid>{3c0006ef-3fb1-4159-8323-6821e3d8c684}</ProjectGuid>
+    <RootNamespace>processgdalvectorIO</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -25,7 +25,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -47,15 +47,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG_;_DEBUG;DEBUG;NOMINMAX=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonParam;D:\gitCode\vcpkg\installed\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D:\gitCode\package\jsoncpp\lib\Debug\jsoncpp.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\gdald.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\tinyxml2.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\zlibd.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\boost_filesystem-vc144-mt-gd-x64-1_85.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\gitCode\vcpkg\installed\x64-windows\debug\lib\gdald.lib;D:\gitCode\vcpkg\installed\x64-windows\debug\lib\boost_filesystem-vc144-mt-gd-x64-1_85.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -64,32 +63,30 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_RELEASE_;NOMINMAX=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;NOMINMAX=1;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonParam;D:\gitCode\package\common\commonUtil;D:\gitCode\package\jsoncpp\include;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\gitCode\package\common\commonIO;D:\gitCode\package\common\commonGEO;D:\gitCode\package\common\commonParam;D:\gitCode\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D:\gitCode\package\jsoncpp\lib\Release\jsoncpp.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\gdal.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\tinyxml2.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\zlib.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\boost_filesystem-vc144-mt-x64-1_85.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D:\gitCode\vcpkg\installed\x64-windows\lib\gdal.lib;D:\gitCode\vcpkg\installed\x64-windows\lib\boost_filesystem-vc144-mt-x64-1_85.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="vectorIO_bytecount_util.h" />
+    <ClInclude Include="vectorIO_common_util.h" />
+    <ClInclude Include="vectorIO_serializing_util.h" />
+    <ClInclude Include="vectorIO_unmanaged.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="vectorIO_bytecount_util.cpp" />
+    <ClCompile Include="vectorIO_common_util.cpp" />
+    <ClCompile Include="vectorIO_serializing_util.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="transform_launch.cpp" />
-    <ClCompile Include="transform_unity.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="transform_launch.h" />
-    <ClInclude Include="transform_unity.h" />
-    <ClInclude Include="transform_unmanaged.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="process_gdal_transform.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

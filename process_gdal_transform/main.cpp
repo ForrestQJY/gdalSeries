@@ -17,21 +17,18 @@ public:
 };
 
 int main(int argc, const char* argv[]) {
-	const char* source = "EPSG:4978";
+	const char* source = "D:\\downloads\\metadata.xml";
 	const char* target = "EPSG:4326";
 
-	//num n1(-2348712.20201754, 5404849.321179945, 2431891.432501744);
-	//num n2(-2295257.86964383, 5407288.682376011, 2476785.363652067);
-	num n3(113.48766697316626, 22.56031199279221, 169.32368773035705);
-	num n4(112.9999999598919, 22.999995766160485, 169.17392709944397);
+	num n1(698000, 2540000, 0);
 
 
-	std::vector<num> vec_num{ n3 ,n4 };
+	std::vector<num> vec_num{ n1 };
 
 	for (num& n : vec_num)
 	{
-		transform_coordSystem(target, source, n.sx, n.sy, n.sz, n.tx, n.ty, n.tz);
-		transform_coordSystem(source, target, n.tx, n.ty, n.tz, n.ex, n.ey, n.ez);
+		transform_coordSystem(source, target, n.sx, n.sy, n.sz, n.tx, n.ty, n.tz);
+		transform_coordSystem(target, source, n.tx, n.ty, n.tz, n.ex, n.ey, n.ez);
 		int a = 0;
 	}
 

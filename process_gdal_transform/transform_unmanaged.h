@@ -66,6 +66,13 @@ UMANAGEAPI transform_fileInformation(U_Transform* u_param)
 	return tl.toInformation();
 }
 
+UMANAGEAPI isGeographic(const char* sourceCoord)
+{
+	geo_gdal gdal;
+	gdal.gdalRegister();
+	util_spatial spatial(sourceCoord);
+	return spatial.IsSourceGeographic();
+}
 
 #endif
 
