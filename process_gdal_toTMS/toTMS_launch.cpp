@@ -34,7 +34,7 @@ void toTMS_launch::getTifFiles()
 	vec_entityTMS = io_composition::getList<entity_tms>(m_param.pBasic, format_tif, "");
 	for (entity_tms& et : vec_entityTMS) {
 		et.gzip = m_param.pTMS.gzip == 1;
-		et.writeVertexNormals = m_param.pTMSQuality.writeVertexNormals == 1;
+		et.writeVertexNormals = m_param.pTMSQuality.writeVertexNormals;
 	}
 	taskCount = vec_entityTMS.size();
 	m_param.pBasic.runnableThread = runnableThread = std::min(m_param.pBasic.runnableThread, taskCount);
