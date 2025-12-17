@@ -5,8 +5,8 @@
 int main(int argc, const char* argv[]) {
 	U_TMS u_param;
 	u_param.f_Basic.AdaptiveFrontEnd = 1;
-	u_param.f_Basic.Input = "E:\\data\\tif\\terrain\\东方枢纽DEM\\东方枢纽DEM1.tif";
-	u_param.f_Basic.Output = "E:\\out\\东方枢纽DEM1";
+	u_param.f_Basic.Input = "E:\\data\\tif\\terrain\\test\\QIS_IDM.tif";
+	u_param.f_Basic.Output = "E:\\out\\QIS_IDM";
 	u_param.f_Basic.RunnableThread = 16;
 	u_param.f_Basic.OverlayFile = 0;
 

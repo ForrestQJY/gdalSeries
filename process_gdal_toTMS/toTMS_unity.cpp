@@ -101,7 +101,7 @@ void toTMS_unity::buildServer(entity_tms et, Grid grid, toTMS_metadata* metadata
 		threadMetadata->set(m_param, m_callback);
 	}
 
-	GBFileTileSerializer serializer(et.o.path_folder, m_param.pBasic.overlayFile);
+	GBFileTileSerializer serializer(et.o.path_folder + symbol_dir, m_param.pBasic.overlayFile);
 
 	try {
 		serializer.startSerialization();
@@ -155,7 +155,7 @@ void toTMS_unity::buildGDAL(entity_tms et, GDALSerializer& serializer, const Ras
 	}
 
 	const char* extension = poDriver->GetMetadataItem(GDAL_DMD_EXTENSION);
-	
+
 	i_zoom maxZoom = tiler.maxZoomLevel();
 	i_zoom minZoom = 0;
 	if (m_param.pTMS.maxZoom > 0) {
@@ -267,41 +267,43 @@ void toTMS_unity::buildTerrain(entity_tms et, TerrainSerializer& serializer, con
 void toTMS_unity::buildJson(entity_tms et, Grid grid, toTMS_metadata* metadata)
 {
 	if (m_param.pTMSQuality.cesiumFriendly && m_param.pTMS.geographicProjectionFormat == "geodetic" && m_param.pTMS.minZoom <= 0) {
+		std::string dirName0 = et.o.path_folder + symbol_dir + "0" + symbol_dir + "0";
+		std::string dirName1 = et.o.path_folder + symbol_dir + "0" + symbol_dir + "1";
+		std::string tileName0 = dirName0 + symbol_dir + "0" + symbol_ext + format_terrain;
+		std::string tileName1 = dirName1 + symbol_dir + "0" + symbol_ext + format_terrain;
 
-		// Create missing root tiles if it is necessary
-		if (m_param.pTMSQuality.cesiumMetadata) {
-			std::string dirName0 = et.o.path_folder + symbol_dir + "0" + symbol_dir + "0";
-			std::string dirName1 = et.o.path_folder + symbol_dir + "0" + symbol_dir + "1";
-			std::string tileName0 = dirName0 + symbol_dir + "0" + symbol_ext + format_terrain;
-			std::string tileName1 = dirName1 + symbol_dir + "0" + symbol_ext + format_terrain;
+		bool isExist0 = io_file::exists(tileName0);
+		bool isExist1 = io_file::exists(tileName1);
 
-			i_zoom missingZoom = 65535;
-			gb::TileCoordinate missingTileCoord(missingZoom, 0, 0);
-			std::string missingTileName;
+		i_zoom missingZoom = 65535;
+		gb::TileCoordinate missingTileCoord(missingZoom, 0, 0);
+		std::string missingTileName;
 
-			if (io_file::exists(tileName0) && !io_file::exists(tileName1)) {
-				io_file::mkdirs(dirName1);
-				missingTileCoord = gb::TileCoordinate(0, 1, 0);
-				missingTileName = tileName1;
-			}
-			else
-				if (!io_file::exists(tileName0) && io_file::exists(tileName1)) {
-					io_file::mkdirs(dirName0);
-					missingTileCoord = gb::TileCoordinate(0, 0, 0);
-					missingTileName = tileName0;
-				}
-			if (missingTileCoord.zoom != missingZoom) {
-				globalIteratorIndex = 0; // reset global iterator index
-				m_param.pTMS.maxZoom = 0;
-				m_param.pTMS.minZoom = 0;
-				missingTileName = createEmptyRootElevationFile(missingTileName, grid, missingTileCoord);
-				buildServer(et, grid, NULL);
-				VSIUnlink(missingTileName.c_str());
+		if (isExist0 && !isExist1) {
+			io_file::mkdirs(dirName1);
+			missingTileCoord = gb::TileCoordinate(0, 1, 0);
+			missingTileName = tileName1;
+		}
+		else if (!isExist0 && isExist1) {
+			io_file::mkdirs(dirName0);
+			missingTileCoord = gb::TileCoordinate(0, 0, 0);
+			missingTileName = tileName0;
+		}
+		if (missingTileCoord.zoom != missingZoom) {
+			globalIteratorIndex = 0; // reset global iterator index
+			m_param.pTMS.maxZoom = 0;
+			m_param.pTMS.minZoom = 0;
+			missingTileName = createEmptyRootElevationFile(missingTileName, grid, missingTileCoord);
+			if (missingTileName != "") {
+				entity_tms etLevel0;
+				etLevel0.set(missingTileName, m_param.pBasic.output);
+				etLevel0.gzip = m_param.pTMS.gzip == 1;
+				etLevel0.writeVertexNormals = m_param.pTMSQuality.writeVertexNormals;
+				buildServer(etLevel0, grid, NULL);
+				io_file::deleteFile(missingTileName);
 			}
 		}
-
-		// Fix available indexes.
-		if (metadata && metadata->vec_levelInfo.size() > 0) {
+		if (metadata && !metadata->vec_levelInfo.empty()) {
 			levelInfo& li = metadata->vec_levelInfo.at(0);
 			li.startX = 0;
 			li.startY = 0;
@@ -330,8 +332,13 @@ std::string toTMS_unity::createEmptyRootElevationFile(std::string& fileName, con
 	tileBounds.setMaxY(tileBounds.getMaxY() - 1);
 	const i_tile tileSize = grid.tileSize() - 2;
 	const double resolution = tileBounds.getWidth() / tileSize;
-	double adfGeoTransform[6] = { tileBounds.getMinX(), resolution, 0, tileBounds.getMaxY(), 0, -resolution };
-
+	double adfGeoTransform[6];
+	adfGeoTransform[0] = tileBounds.getMinX(); // min longitude
+	adfGeoTransform[1] = resolution;
+	adfGeoTransform[2] = 0;
+	adfGeoTransform[3] = tileBounds.getMaxY(); // max latitude
+	adfGeoTransform[4] = 0;
+	adfGeoTransform[5] = -resolution;
 	// Create the spatial reference system for the file
 	OGRSpatialReference oSRS;
 
@@ -350,10 +357,11 @@ std::string toTMS_unity::createEmptyRootElevationFile(std::string& fileName, con
 		throw GBException("Could not create EPSG:4326 WKT string");
 	}
 
-	// Create the GTiff file
 	fileName += ".tif";
-	GDALDataset* poDataset = poDriver->Create(fileName.c_str(), tileSize, tileSize, 1, GDT_Float32, NULL);
+	std::string filePath_utf8 = io_file::stringToUTF8(fileName);
+	GDALDataset* poDataset = poDriver->Create(filePath_utf8.c_str(), tileSize, tileSize, 1, GDT_Float32, NULL);
 
+	if (poDataset == NULL)return "";
 	// Set the projection
 	if (poDataset->SetProjection(pszDstWKT) != CE_None) {
 		poDataset->Release();

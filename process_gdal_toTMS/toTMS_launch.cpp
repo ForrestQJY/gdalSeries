@@ -32,11 +32,13 @@ bool toTMS_launch::toTerrain()
 void toTMS_launch::getTifFiles()
 {
 	vec_entityTMS = io_composition::getList<entity_tms>(m_param.pBasic, format_tif, "");
+	if (vec_entityTMS.empty())taskCount = 0;
+	else taskCount = vec_entityTMS.size();
+	if (taskCount == 0)return;
 	for (entity_tms& et : vec_entityTMS) {
 		et.gzip = m_param.pTMS.gzip == 1;
 		et.writeVertexNormals = m_param.pTMSQuality.writeVertexNormals;
 	}
-	taskCount = vec_entityTMS.size();
 	m_param.pBasic.runnableThread = runnableThread = std::min(m_param.pBasic.runnableThread, taskCount);
 	if (m_param.pTMS.maxZoom < m_param.pTMS.minZoom || m_param.pTMS.maxZoom < 0 || m_param.pTMS.minZoom < 0) {
 		m_param.pTMS.maxZoom = 0;
@@ -46,6 +48,7 @@ void toTMS_launch::getTifFiles()
 }
 void toTMS_launch::buildFiles()
 {
+	if (taskCount == 0)return;
 	for (entity_tms et : vec_entityTMS) {
 		if (m_param.pBasic.overlayFile) {
 			io_file::deleteFolder(et.o.path_folder);

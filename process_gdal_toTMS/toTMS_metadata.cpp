@@ -43,7 +43,7 @@ void toTMS_metadata::add(const GDALTiler& tiler, const TileCoordinate* coordinat
 
 void toTMS_metadata::add(const toTMS_metadata& otherMetadata)
 {
-	if (otherMetadata.vec_levelInfo.size() > 0) {
+	if (!otherMetadata.vec_levelInfo.empty()) {
 		const CRSBounds& _tileBounds = otherMetadata.bounds;
 		const CRSBounds& _validBounds = otherMetadata.validBounds;
 
@@ -127,7 +127,7 @@ void toTMS_metadata::writeJsonFile(entity_tms ti)
 	else {
 		valueLayer["format"] = "GDAL";
 	}
-	valueLayer["name"] = ti.i.file_name_without_extension;
+	valueLayer["name"] = ti.i.file_name_without_extension_utf8;
 	if (m_param.pTMS.geographicProjectionFormat == "geodetic") {
 		valueLayer["projection"] = "EPSG:4326";
 	}
@@ -142,7 +142,7 @@ void toTMS_metadata::writeJsonFile(entity_tms ti)
 	valueLayer["bounds"].append(validMinY);
 	valueLayer["bounds"].append(validMaxX);
 	valueLayer["bounds"].append(validMaxY);
-	for (size_t i = 0, icount = vec_levelInfo.size(); i < icount; i++) {
+	for (size_t i = 0; i < vec_levelInfo.size(); i++) {
 		const levelInfo& level = vec_levelInfo[i];
 		if (level.finalX >= level.startX) {
 
@@ -232,10 +232,10 @@ void toTMS_metadata::writeXmlFile(entity_tms ti)
 			strEpsgCode = "PROJ";
 		}
 	}
-	std::string strCTBFormat = m_param.pTMS.tmsFormat;
+	std::string strTMSFormat = m_param.pTMS.tmsFormat;
 	std::string strTileSize = io_utily::toString(m_param.pTMS.tileSize);
-	std::string strMimeType = strCTBFormat == format_jpg ? "image/jpeg" : strCTBFormat == format_png ? "image/png" : "image/tiff";
-	std::string strProfile = m_param.pTMS.geographicProjectionFormat;
+	std::string strMimeType = strTMSFormat == format_jpg ? "image/jpeg" : strTMSFormat == format_png ? "image/png" : "image/tiff";
+	std::string strGeographicProjectionFormat = m_param.pTMS.geographicProjectionFormat;
 
 
 	std::string xml;
@@ -254,9 +254,9 @@ void toTMS_metadata::writeXmlFile(entity_tms ti)
 	xml.append("\n");
 	xml.append("<Origin x=\"" + strMinX + "\" y=\"" + strMinY + "\"/>");
 	xml.append("\n");
-	xml.append("<TileFormat width=\"" + strTileSize + "\" height=\"" + strTileSize + "\" mime-type=\"" + strMimeType + "\" extension=\"" + strCTBFormat + "\"/>");
+	xml.append("<TileFormat width=\"" + strTileSize + "\" height=\"" + strTileSize + "\" mime-type=\"" + strMimeType + "\" extension=\"" + strTMSFormat + "\"/>");
 	xml.append("\n");
-	xml.append("<TileSets geographicProjectionFormat=\"" + strProfile + "\">");
+	xml.append("<TileSets geographicProjectionFormat=\"" + strGeographicProjectionFormat + "\">");
 	xml.append("\n");
 
 	for (int i = 0; i < vec_levelInfo.size(); i++)
